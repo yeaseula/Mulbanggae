@@ -1,6 +1,10 @@
 "use client"
 import { useEffect, useRef } from "react"
 import { initMap } from "./initmap"
+import { BottomSheet } from "@/components/bottomsheet/bottomsheet"
+import { LocationSearch } from "@/features/location/location-search"
+import { LocationButton } from "./location-button"
+import { LocationBottomSheet } from "./location-bottom-sheet"
 import styled from "styled-components"
 
 export function Location () {
@@ -15,7 +19,16 @@ export function Location () {
             //map?.destroy?.()
         }
     },[])
-    return <MapArea ref={mapRef} />
+    return (
+        <>
+        <MapArea ref={mapRef} />
+        <LocationSearch />
+        <LocationButton />
+        <BottomSheet open>
+            <LocationBottomSheet />
+        </BottomSheet>
+        </>
+    )
 }
 
 const MapArea = styled.div`
