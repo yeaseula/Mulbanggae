@@ -3,6 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --main_color: #245AF6;
+  --point_color: #4DD0E1;
+  --sub_light_color: #E6EEFF;
+  --disabled_color: #6F93FF;
+  --error_color: #EB5757;
+  /* gray */
+  --gray_light_color: #F2F2F2;
+  --gray_medium_color: #E0E0E0;
+  --gray_semidark_color: #C4C4C4;
+  --gray_dark_color: #767676;
+  --gray_black_color: #424242;
 }
 
 @theme inline {
