@@ -1,6 +1,6 @@
 "use client"
 import { InputType } from "@/types/form-types";
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 
 export function InputField({
     label,
@@ -20,7 +20,7 @@ export function InputField({
         >{label} {required && <b className="font-bold text-red-700"> *</b>}</label>
         <InputStyle
         id={id}
-        className={error && 'error'}
+        $isError={!!error}
         aria-required={required}
         aria-invalid={!!error}
         aria-describedby={error ? `${name}-error` : undefined}
@@ -31,7 +31,7 @@ export function InputField({
     )
 }
 
-const InputStyle = styled.input`
+const InputStyle = styled.input<{$isError?: boolean}>`
     display: block;
     width: 100%;
     height: 44px;
@@ -47,5 +47,10 @@ const InputStyle = styled.input`
     }
     &.error {
         outline: 2px solid var(--error_color)
-    }
+    };
+    ${({$isError})=>
+     $isError &&
+    css`
+        outline: 2px solid var(--error_color)
+    `}
 `
