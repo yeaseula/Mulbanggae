@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { initMap } from "./initmap"
 import { BottomSheet } from "@/components/bottomsheet/bottomsheet"
 import { LocationSearch } from "@/features/location/location-search"
@@ -8,6 +8,9 @@ import { LocationBottomSheet } from "./location-bottom-sheet"
 import styled from "styled-components"
 
 export function Location () {
+
+    const [open,setOpen] = useState(true)
+
     const mapRef = useRef<HTMLDivElement>(null)
 
     useEffect(()=>{
@@ -24,7 +27,7 @@ export function Location () {
         <MapArea ref={mapRef} />
         <LocationSearch />
         <LocationButton />
-        <BottomSheet open>
+        <BottomSheet open={open} onClose={()=>setOpen(false)}>
             <LocationBottomSheet />
         </BottomSheet>
         </>

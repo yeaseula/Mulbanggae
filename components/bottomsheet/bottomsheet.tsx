@@ -1,23 +1,52 @@
 "use client"
-
-import { ReactNode } from "react"
+import { ReactNode, useEffect } from "react"
+import { useBottomSheetDrag } from "./use-bottomsheet-drag"
 import styled from "styled-components"
 
 type BottomSheetProps = {
     open: boolean
+    onClose: ()=>void
     children: ReactNode
 }
 
-export function BottomSheet({open, children}:BottomSheetProps){
+export function BottomSheet({open,onClose,children}:BottomSheetProps){
+
+    const {
+        sheetRef,
+        currentY,
+        handleMouseDown,
+        handleTouchStart
+    } = useBottomSheetDrag({onClose})
+
+    useEffect(()=>{
+        if(!open) return
+        const onKeyDown = (e:KeyboardEvent) => {
+            if (e.key === 'Escape') onClose()
+
+        }
+
+        document.addEventListener('keydown', onKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown',onKeyDown)
+        }
+    },[open,onClose])
+
     return (
-        <Wrapper data-open={open}>
+        <Wrapper
+        ref={sheetRef}
+        data-open={open}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        $translateY={currentY}
+        >
         <Handle />
         <Content>{children}</Content>
         </Wrapper>
     )
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{$translateY:number}>`
     max-width: 390px;
     width: 100%;
     position: fixed;
@@ -25,12 +54,12 @@ const Wrapper = styled.div`
     height: 40%;
     background: white;
     border-radius: 16px 16px 0 0;
-    transform: translateY(100%);
-    transition: transform 0.25s ease;
     z-index: 30;
-
+    touch-action: none;
+    transform: translateY(100%);
+    transition: transform 0.5s;
     &[data-open='true'] {
-        transform: translateY(0);
+        transform: translateY(${(p)=>p.$translateY});
     }
 `
 
