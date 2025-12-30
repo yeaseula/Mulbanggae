@@ -3,6 +3,7 @@ import { Header } from "@/components/header/header";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GmarketSans } from "@/public/fonts/fonts";
 import "./globals.css";
+import { Navigation } from "@/components/navigation/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,11 +26,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={GmarketSans.className}>
+    <html lang="ko" className={GmarketSans.className} suppressHydrationWarning>
       <body>
         <div className="body-wrapper">
           <Header />
           {children}
+          <Navigation />
         </div>
       </body>
     </html>
