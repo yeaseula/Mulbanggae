@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Header } from "@/components/header/header";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GmarketSans } from "@/public/fonts/fonts";
 import "./globals.css";
@@ -26,7 +27,10 @@ export default function RootLayout({
   return (
     <html lang="ko" className={GmarketSans.className}>
       <body>
-        {children}
+        <div className="body-wrapper">
+          <Header />
+          {children}
+        </div>
       </body>
     </html>
   );
