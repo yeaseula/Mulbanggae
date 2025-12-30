@@ -1,18 +1,6 @@
 "use client"
-import {InputHTMLAttributes} from "react";
-import { RegisterOptions, UseFormRegister } from "react-hook-form";
+import { InputType } from "@/types/form-types";
 import styled from "styled-components";
-
-interface InputType extends Omit<InputHTMLAttributes<HTMLInputElement>, 'width'|'name'> {
-    name: string;
-    label: string;
-    error?: string;
-    required?: boolean;
-    register: UseFormRegister<any>;
-    rules?: RegisterOptions;
-    width?: string | number;
-    show?: boolean
-}
 
 export function InputAgreeField({
     label,
