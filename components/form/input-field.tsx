@@ -31,6 +31,7 @@ export function InputField({
         className="block text-xl mb-2"
         >{label} {required && <b className="font-bold text-red-700"> *</b>}</label>
         <InputStyle
+        id={id}
         className={error && 'error'}
         aria-required={required}
         aria-invalid={!!error}

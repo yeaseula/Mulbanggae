@@ -16,7 +16,6 @@ export const SubmitButton = memo(({
     disabled,
     children
 }:ButtonProps)=>{
-    console.log(disabled)
     return (
         <Button type={type} disabled={disabled} onClick={onClick}>{children}</Button>
     )
@@ -25,6 +24,7 @@ export const SubmitButton = memo(({
 const Button = styled.button`
     width: 100%;
     height: 100%;
+    line-height: 47px;
     color: #fff;
     border-radius: 100px;
     background-color: var(--main_color);

@@ -1,14 +1,19 @@
 "use client"
 
-import { useForm, SubmitHandler, FormProvider, useWatch } from "react-hook-form"
+import Link from "next/link"
+import { useForm, SubmitHandler } from "react-hook-form"
+import { EMAIL_REGEX, PASS_REGEX } from "@/utils/validation"
 import { InputField } from "@/components/form/input-field"
-import { CommonWrapper } from "@/styled/layout.styled"
+import { InputAgreeField } from "@/components/form/input-agree-field"
 import { SubmitButton } from "@/components/form/submit-button"
+import { CommonWrapper } from "@/styled/layout.styled"
 
 export interface SignFormValid {
     email: string
     password: string
     passwordCheck: string
+    agreeTermsofUse: boolean
+    privacyTermsofUse: boolean
 }
 
 export function SignUp() {
@@ -21,15 +26,11 @@ export function SignUp() {
         mode: "onChange",
     })
 
-
     const onSubmit: SubmitHandler<SignFormValid> = () => handleSignUp()
 
     const handleSignUp = () => {
 
     }
-
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const PASS_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     return (
         <CommonWrapper>
@@ -40,7 +41,7 @@ export function SignUp() {
                     당신의 이야기를 담아보세요.
                 </p>
 
-                <div className="mt-10">
+                <div className="mt-22">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <InputField
                         placeholder="이메일을 입력해주세요."
@@ -63,7 +64,7 @@ export function SignUp() {
                             // }
                         }}/>
                         {errors.email &&
-                            <p className="text-red-600 mt-3 text-xl">{errors.email.message}</p>
+                            <p className="mt-3 text-xl text-red-600">{errors.email.message}</p>
                         }
                         <div className="mt-8">
                             <InputField
@@ -85,7 +86,7 @@ export function SignUp() {
                                 }
                             }}/>
                             {errors.password &&
-                            <p className="text-red-600 mt-3 text-xl">{errors.password.message}</p>
+                            <p className="mt-3 text-xl text-red-600">{errors.password.message}</p>
                             }
                         </div>
                         <div className="mt-8">
@@ -103,13 +104,43 @@ export function SignUp() {
                             }}
                             />
                             {errors.passwordCheck &&
-                            <p className="text-red-600 mt-3 text-xl">{errors.passwordCheck.message}</p>
+                            <p className="mt-3 text-xl text-red-600">{errors.passwordCheck.message}</p>
                             }
                         </div>
-                        <div className="h-18 mt-14">
+                        <div className="mt-14">
+                            <InputAgreeField
+                            name="agreeTermsofUse"
+                            type="checkbox"
+                            label="(필수) 서비스 이용 약관에 동의합니다."
+                            required
+                            register={register}
+                            rules={{
+                                required: true
+                            }}
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <InputAgreeField
+                            name="agreePersonal"
+                            type="checkbox"
+                            label="(필수) 개인정보 수집 및 이용에 동의합니다."
+                            required
+                            register={register}
+                            rules={{
+                                required: true
+                            }}
+                            />
+                        </div>
+                        <div className="mt-14 h-18">
                             <SubmitButton disabled={!isValid || isSubmitting} type="submit">회원가입</SubmitButton>
                         </div>
                     </form>
+
+                    <div className="mt-16 mb-18 w-full h-0.5 bg-gray-200"></div>
+
+                    <p className="text-center text-[1.2rem] text-gray-400">이미 계정이 있으신가요?
+                        <Link href={'/login'} className="text-(--main_color) ml-2">이메일로 로그인</Link>
+                    </p>
                 </div>
             </div>
         </CommonWrapper>
