@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/header/header";
-import { Geist, Geist_Mono } from "next/font/google";
+import StyledComponentsRegistry from '../lib/registry'
 import { GmarketSans } from "@/public/fonts/fonts";
-import "./globals.css";
+import { Header } from "@/components/header/header";
 import { Navigation } from "@/components/navigation/navigation";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,9 +19,11 @@ export default function RootLayout({
     <html lang="ko" className={GmarketSans.className} suppressHydrationWarning>
       <body>
         <div className="body-wrapper">
+          <StyledComponentsRegistry>
           <Header />
           {children}
           <Navigation />
+          </StyledComponentsRegistry>
         </div>
       </body>
     </html>
