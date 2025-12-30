@@ -55,8 +55,8 @@ export function Navigation() {
                     {pathname === ele.href ?
                     <ele.activeIcon size={24} color="var(--main_color)"/>
                     : <ele.icon size={24} />
-                }
-                    <p className={`${pathname === ele.href && 'text-(--main_color)'}`}>{ele.text}</p>
+                    }
+                    <p className={`${pathname === ele.href ? 'text-(--main_color)' : ''}`}>{ele.text}</p>
                 </NavigationDetail>
             ))}
         </NavigationWrapper>
