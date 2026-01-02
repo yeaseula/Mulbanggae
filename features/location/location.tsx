@@ -39,7 +39,7 @@ export function Location () {
         <>
         <MapArea ref={mapRef}>
         </MapArea>
-        <LocationSearch />
+        <LocationSearch map={locationRef.current}/>
         {mapReady &&
         <LocationButton map={locationRef.current} />
         }
