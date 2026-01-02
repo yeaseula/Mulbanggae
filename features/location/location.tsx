@@ -6,6 +6,7 @@ import { LocationSearch } from "@/features/location/location-search"
 import { LocationButton } from "./location-button"
 import { LocationBottomSheet } from "./location-bottom-sheet"
 import styled from "styled-components"
+import { moveToCurrentLocation } from "./move-current-location"
 
 export function Location () {
 
@@ -15,7 +16,17 @@ export function Location () {
 
     useEffect(()=>{
         if (!mapRef.current) return
-        InitMap(mapRef.current)
+
+        let map: kakao.maps.Map
+
+        const mapload = async() => {
+            if (!mapRef.current) return
+            map = await InitMap(mapRef.current)
+            moveToCurrentLocation(map)
+        }
+
+        mapload()
+
     },[])
 
 
