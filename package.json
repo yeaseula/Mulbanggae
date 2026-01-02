@@ -15,6 +15,7 @@
     "react-dom": "19.2.3",
     "react-focus-lock": "^2.13.7",
     "react-hook-form": "^7.69.0",
+    "react-kakao-maps-sdk": "^1.2.0",
     "styled-components": "^6.1.19"
   },
   "devDependencies": {
@@ -25,6 +26,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "eslint-config-prettier": "^10.1.8",
+    "kakao.maps.d.ts": "^0.1.40",
     "prettier": "^3.7.4",
     "tailwindcss": "^4",
     "typescript": "^5"
