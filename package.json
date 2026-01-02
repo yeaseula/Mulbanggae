@@ -16,7 +16,8 @@
     "react-focus-lock": "^2.13.7",
     "react-hook-form": "^7.69.0",
     "react-kakao-maps-sdk": "^1.2.0",
-    "styled-components": "^6.1.19"
+    "styled-components": "^6.1.19",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

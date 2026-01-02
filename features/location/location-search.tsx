@@ -20,8 +20,8 @@ export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
             return
         }
 
-        const targettest = searchStores(map,value);
-        console.log(targettest)
+        searchStores(map,value);
+
     }
 
     return (

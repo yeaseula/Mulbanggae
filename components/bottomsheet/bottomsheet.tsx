@@ -74,4 +74,5 @@ const Handle = styled.div`
 const Content = styled.div`
     height: 100%;
     overflow-y: auto;
+    padding-bottom: 15px;
 `

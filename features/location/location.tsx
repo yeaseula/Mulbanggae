@@ -1,18 +1,29 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
+import { useLocationStore } from "@/store/locationstore"
 import { BottomSheet } from "@/components/bottomsheet/bottomsheet"
 import { LocationSearch } from "@/features/location/location-search"
 import { InitMap } from "./initmap"
 import { LocationButton } from "./location-button"
 import { LocationBottomSheet } from "./location-bottom-sheet"
 import { moveToCurrentLocation } from "./move-current-location"
-import styled from "styled-components"
 import { searchNearbyStores } from "./search-near-stores"
+import styled from "styled-components"
 
 export function Location () {
 
+    const {searchResult} = useLocationStore()
+
+    //bottom sheet 관련 코드
     const [open,setOpen] = useState(false)
 
+    useEffect(()=>{
+        if(searchResult.length > 0 ) {
+            setOpen(true)
+        }
+    },[searchResult])
+
+    //map 관련 코드
     const mapRef = useRef<HTMLDivElement>(null)
     const locationRef = useRef<kakao.maps.Map | null>(null)
     const [mapReady,setMapReady] = useState<boolean>(false)

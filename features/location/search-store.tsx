@@ -1,3 +1,5 @@
+import { useLocationStore } from "@/store/locationstore"
+
 export function searchStores(
     map: kakao.maps.Map,
     keyword: any
@@ -10,7 +12,7 @@ export function searchStores(
             console.log(status)
             console.log('-----------🚫🚫🚫🚫')
             console.log(data)
-            return data
+            useLocationStore.getState().setSearchResult(data)
         },
         {
             location: map.getCenter(),
