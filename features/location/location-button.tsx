@@ -1,9 +1,19 @@
 "use client"
 import styled from "styled-components"
 import { RiCrosshairLine } from "@remixicon/react"
+import { moveToCurrentLocation } from "./move-current-location"
 
-export function LocationButton() {
-    return <FloatingButton>
+export function LocationButton({map,}:{map : kakao.maps.Map}) {
+    if(!map) return null
+
+    const handleClick = async () => {
+        try {
+            await moveToCurrentLocation(map)
+        } catch {
+            alert('위치정보를 가져올 수 없습니다.')
+        }
+    }
+    return <FloatingButton onClick={handleClick}>
         <RiCrosshairLine size={24} /></FloatingButton>
 }
 

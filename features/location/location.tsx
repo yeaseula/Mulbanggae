@@ -13,16 +13,20 @@ export function Location () {
     const [open,setOpen] = useState(false)
 
     const mapRef = useRef<HTMLDivElement>(null)
+    const locationRef = useRef<kakao.maps.Map | null>(null)
+    const [mapReady,setMapReady] = useState<boolean>(false)
+
+    console.log(locationRef.current + ': 현재위치')
 
     useEffect(()=>{
         if (!mapRef.current) return
 
-        let map: kakao.maps.Map
-
         const mapload = async() => {
             if (!mapRef.current) return
-            map = await InitMap(mapRef.current)
+            const map = await InitMap(mapRef.current)
+            locationRef.current = map
             moveToCurrentLocation(map)
+            setMapReady(true)
         }
 
         mapload()
@@ -35,7 +39,9 @@ export function Location () {
         <MapArea ref={mapRef}>
         </MapArea>
         <LocationSearch />
-        <LocationButton />
+        {mapReady &&
+        <LocationButton map={locationRef.current} mapReady={mapReady}/>
+        }
         <BottomSheet open={open} onClose={()=>setOpen(false)}>
             <LocationBottomSheet />
         </BottomSheet>
