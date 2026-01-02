@@ -7,6 +7,7 @@ import { LocationButton } from "./location-button"
 import { LocationBottomSheet } from "./location-bottom-sheet"
 import { moveToCurrentLocation } from "./move-current-location"
 import styled from "styled-components"
+import { searchNearbyStores } from "./search-near-stores"
 
 export function Location () {
 
@@ -16,8 +17,6 @@ export function Location () {
     const locationRef = useRef<kakao.maps.Map | null>(null)
     const [mapReady,setMapReady] = useState<boolean>(false)
 
-    console.log(locationRef.current + ': 현재위치')
-
     useEffect(()=>{
         if (!mapRef.current) return
 
@@ -25,7 +24,9 @@ export function Location () {
             if (!mapRef.current) return
             const map = await InitMap(mapRef.current)
             locationRef.current = map
-            moveToCurrentLocation(map)
+
+            await moveToCurrentLocation(map) //map center 순서보장을 위해
+            searchNearbyStores(map, '동물병원')
             setMapReady(true)
         }
 
@@ -40,7 +41,7 @@ export function Location () {
         </MapArea>
         <LocationSearch />
         {mapReady &&
-        <LocationButton map={locationRef.current} mapReady={mapReady}/>
+        <LocationButton map={locationRef.current} />
         }
         <BottomSheet open={open} onClose={()=>setOpen(false)}>
             <LocationBottomSheet />

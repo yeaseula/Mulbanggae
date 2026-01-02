@@ -3,7 +3,7 @@ import styled from "styled-components"
 import { RiCrosshairLine } from "@remixicon/react"
 import { moveToCurrentLocation } from "./move-current-location"
 
-export function LocationButton({map,}:{map : kakao.maps.Map}) {
+export function LocationButton({map}:{map : kakao.maps.Map | null}) {
     if(!map) return null
 
     const handleClick = async () => {
