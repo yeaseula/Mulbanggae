@@ -14,12 +14,12 @@ export function searchNearbyStores(
 
             data.forEach((place) => {
                 const marker = new kakao.maps.Marker({
-                map,
-                position: new kakao.maps.LatLng(
-                    Number(place.y),
-                    Number(place.x)
-                ),
-                image: MarkerImage
+                    map,
+                    position: new kakao.maps.LatLng(
+                        Number(place.y),
+                        Number(place.x)
+                    ),
+                    image: MarkerImage
                 })
             })
         },
