@@ -10,8 +10,6 @@ export async function moveToCurrentLocation(map: kakao.maps.Map):Promise<void> {
 
         const ImageSrc = '/images/my-marker.svg'
         const ImageSize = new kakao.maps.Size(48,62)
-
-
         const MarkerImage = new kakao.maps.MarkerImage(ImageSrc,ImageSize)
 
         new window.kakao.maps.Marker({

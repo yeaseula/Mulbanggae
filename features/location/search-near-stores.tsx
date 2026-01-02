@@ -7,13 +7,19 @@ export function searchNearbyStores(
         keyword,
         (data, status) => {
             if (status !== kakao.maps.services.Status.OK) return
+
+            const ImageSrc = '/images/hospital-marker.svg'
+            const ImageSize = new kakao.maps.Size(48,62)
+            const MarkerImage = new kakao.maps.MarkerImage(ImageSrc,ImageSize)
+
             data.forEach((place) => {
                 const marker = new kakao.maps.Marker({
                 map,
-                    position: new kakao.maps.LatLng(
-                        Number(place.y),
-                        Number(place.x)
-                    ),
+                position: new kakao.maps.LatLng(
+                    Number(place.y),
+                    Number(place.x)
+                ),
+                image: MarkerImage
                 })
             })
         },
