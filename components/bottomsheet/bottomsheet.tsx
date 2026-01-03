@@ -58,7 +58,7 @@ const Y = {
 }
 
 const H = {
-    hidden: '0vh',
+    hidden: '15px',
     default: '40vh',
     expanded: '80vh'
 }
@@ -74,25 +74,26 @@ const Wrapper = styled.div<{$open:boolean, $state:SheetState}>`
     transform: ${(p)=>p.$open ? 'translateY(0)' : 'translateY(100%)'};
     will-change: transform;
     background-color: #fff;
-    opacity: ${(p)=>p.$open ? 1 : 0}
+    opacity: ${(p)=>p.$open ? 1 : 0};
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 `
 const InnerContainer = styled.div<{$state:SheetState}>`
     overflow-y: auto;
     max-height: ${(p)=>H[p.$state]};
-    transition: height 0.3s ease;
+    transition: height 0.4s linear;
     background: white;
 `
 
 const Handle = styled.div`
     width: 100%;
-    height: 25px;
+    height: 33px;
     cursor: pointer;
     touch-action: none;
     &::before {
         content: '';
         display: block;
         position: absolute;
-        top: 8px;
+        top: 14px;
         left: 50%;
         transform: translate(-50%);
         width: 36px;
