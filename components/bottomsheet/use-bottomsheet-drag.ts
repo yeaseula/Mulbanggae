@@ -7,20 +7,36 @@ interface Props {
 }
 
 type SheetState = 'hidden' | 'default' | 'expanded'
+type DragState = 'sheet' | 'content' | null
+type DragSource = 'handle' | 'content' | null
 
 export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
     const sheetRef = useRef<HTMLDivElement>(null)
-    const scrollRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+    const handleRef = useRef<HTMLDivElement>(null)
     const [sheet,setSheet] = useState<SheetState>('default')
     const startRef = useRef(0)
     const isClickRef = useRef(false)
+    const dragModeRef = useRef<DragState>(null)
+    const dragsourceRef = useRef<DragSource>(null)
 
     const pointerDown = (e:React.PointerEvent) => {
         e.currentTarget.setPointerCapture(e.pointerId)
         startRef.current = e.clientY
-
         isClickRef.current = true
+        dragModeRef.current = null
+
+        const clickTarget = e.target as Node
+
+        if(handleRef.current?.contains(clickTarget)) { //click 시작점 판별
+            dragsourceRef.current = 'handle'
+        } else if (contentRef.current?.contains(clickTarget)) {
+            dragsourceRef.current = 'content'
+        } else {
+            dragsourceRef.current = null
+        }
+
     }
 
     const pointerMove = (e:React.PointerEvent) => {
@@ -28,27 +44,67 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         if(!isClickRef.current) return
 
         const moveDistance = e.clientY - startRef.current;
+        //moveDistance > 0 아래로 내림
+        const DragSheet = contentRef.current!.scrollTop === 0 //스크롤이 맨 위?
 
-        if(Math.abs(moveDistance) > 15) {
+        //dragmod ? 시작점이 handle인가? -> sheet
+        //시작점이 content인가? -> 다른 조건 분기
+
+        //default
+        //scroll 맨 위일때
+        //아래로 내리면 hidden으로 ->'sheet'
+        //위로 올리면 스크롤 -> 'content'
+        //scroll 중간일때 -> 계속 스크롤상태 -> 'content'
+        //scroll 아래일때 -> 계속 스크롤상태 => 'content'
+
+        //expanded
+        //scroll 맨 위일때
+        //아래로 내리면 default로
+        //위로 올리면 스크롤
+
+        //hidden
+        //scroll 상관없이
+        //위로 올리면 default
+        //아래로 내리면 변화없음
+        if(Math.abs(moveDistance) <= 15) return // 드래그 중인가?
+
+        //console.log('----드래그중 통과')
+        console.log(dragModeRef.current + 'drag mode 첫값')
+        if(!dragModeRef.current) {
+            if(dragsourceRef.current === 'handle') {
+                dragModeRef.current = 'sheet'
+
+            } else if(dragsourceRef.current === 'content'){
+                if(DragSheet && moveDistance > 0) {
+                    dragModeRef.current = 'sheet'
+                } else {
+                    dragModeRef.current = 'content'
+                }
+            }
+        }
+
+        if(dragModeRef.current === 'sheet') {
+            if(sheet === 'expanded' && moveDistance < -75 ) return
             sheetRef.current!.style.transform = `translateY(${moveDistance}px)`
-            scrollRef.current!.style.overflowY = 'initial'
+            contentRef.current!.style.overflowY = 'initial'
         }
     }
 
     const pointerUp = (e:React.PointerEvent) => {
 
         if(!isClickRef.current) return
-
         isClickRef.current = false
 
-        scrollRef.current!.style.overflowY = 'auto'
+        if(dragModeRef.current !== 'sheet') return
+
+        contentRef.current!.style.overflowY = 'auto'
 
         const moveDistance = e.clientY - startRef.current;
+
         handleTranslate(moveDistance)
     }
 
     const handleTranslate = (moveDistance:number) => {
-
         if(moveDistance < -120) {
             let result:SheetState = 'default'
 
@@ -86,7 +142,8 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
     return {
         sheetRef,
-        scrollRef,
+        contentRef,
+        handleRef,
         sheet,
         pointerDown, pointerMove, pointerUp
     }

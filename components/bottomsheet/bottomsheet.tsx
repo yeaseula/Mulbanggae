@@ -15,7 +15,8 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
 
     const {
         sheetRef,
-        scrollRef,
+        contentRef,
+        handleRef,
         sheet,
         pointerDown, pointerMove, pointerUp
     } = useBottomSheetDrag({onClose, open})
@@ -38,27 +39,27 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         ref={sheetRef}
         $state={sheet}
         $open={open}
+        onPointerDown={pointerDown}
+        onPointerMove={pointerMove}
         onPointerUp={pointerUp}
+        onPointerLeave={pointerUp}
+        onPointerCancel={pointerUp}
         >
         <Handle
-            onPointerDown={pointerDown}
-            onPointerMove={pointerMove}
-            onPointerUp={pointerUp}
+            ref={handleRef}
+            // onPointerDown={pointerDown}
+            // onPointerMove={pointerMove}
+            // onPointerUp={pointerUp}
         />
-        <InnerContainer ref={scrollRef} $state={sheet}>
+        <InnerContainer ref={contentRef} $state={sheet}>
             <Content >{children}</Content>
         </InnerContainer>
         </Wrapper>
     )
 }
-const Y = {
-    hidden: '0',
-    default: '0',
-    expanded: '0'
-}
 
 const H = {
-    hidden: '15px',
+    hidden: '1px',
     default: '40vh',
     expanded: '80vh'
 }
@@ -82,6 +83,18 @@ const InnerContainer = styled.div<{$state:SheetState}>`
     max-height: ${(p)=>H[p.$state]};
     transition: height 0.4s linear;
     background: white;
+    &::-webkit-scrollbar {
+        width: 2px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 2px;
+    }
 `
 
 const Handle = styled.div`
