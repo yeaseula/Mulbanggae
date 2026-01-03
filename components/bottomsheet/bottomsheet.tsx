@@ -9,20 +9,21 @@ type BottomSheetProps = {
     children: ReactNode
 }
 
+type SheetState = 'hidden' | 'default' | 'expanded'
+
 export function BottomSheet({open,onClose,children}:BottomSheetProps){
 
     const {
         sheetRef,
-        currentY,
-        handleMouseDown,
-        handleTouchStart
-    } = useBottomSheetDrag({onClose})
+        scrollRef,
+        sheet,
+        pointerDown, pointerMove, pointerUp
+    } = useBottomSheetDrag({onClose, open})
 
     useEffect(()=>{
         if(!open) return
         const onKeyDown = (e:KeyboardEvent) => {
             if (e.key === 'Escape') onClose()
-
         }
 
         document.addEventListener('keydown', onKeyDown);
@@ -35,44 +36,74 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
     return (
         <Wrapper
         ref={sheetRef}
-        data-open={open}
-        onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        $translateY={currentY}
+        $state={sheet}
+        $open={open}
+        onPointerUp={pointerUp}
         >
-        <Handle />
-        <Content>{children}</Content>
+        <Handle
+            onPointerDown={pointerDown}
+            onPointerMove={pointerMove}
+            onPointerUp={pointerUp}
+        />
+        <InnerContainer ref={scrollRef} $state={sheet}>
+            <Content >{children}</Content>
+        </InnerContainer>
         </Wrapper>
     )
 }
+const Y = {
+    hidden: '0',
+    default: '0',
+    expanded: '0'
+}
 
-const Wrapper = styled.div<{$translateY:number}>`
+const H = {
+    hidden: '0vh',
+    default: '40vh',
+    expanded: '80vh'
+}
+
+const Wrapper = styled.div<{$open:boolean, $state:SheetState}>`
     max-width: 390px;
     width: 100%;
     position: fixed;
     bottom: 0;
-    height: 40%;
-    background: white;
     border-radius: 16px 16px 0 0;
     z-index: 30;
     touch-action: none;
-    transform: translateY(100%);
-    transition: transform 0.5s;
-    &[data-open='true'] {
-        transform: translateY(${(p)=>p.$translateY});
-    }
+    will-change: transform;
+    transform: ${(p)=>p.$open ? 'translateY(0)' : 'translateY(100%)'};
+
+    background-color: #fff;
+    opacity: ${(p)=>p.$open ? 1 : 0}
+`
+const InnerContainer = styled.div<{$state:SheetState}>`
+    overflow-y: auto;
+    max-height: ${(p)=>H[p.$state]};
+    transition: height 0.3s ease;
+    background: white;
 `
 
 const Handle = styled.div`
-    width: 36px;
-    height: 3px;
-    background: var(--gray_semidark_color);
-    border-radius: 999px;
-    margin: 8px auto;
+    width: 100%;
+    height: 25px;
+    cursor: pointer;
+    touch-action: none;
+    &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translate(-50%);
+        width: 36px;
+        height: 3px;
+        background: var(--gray_semidark_color);
+        border-radius: 999px;
+    }
 `
 
 const Content = styled.div`
-    height: 100%;
-    overflow-y: auto;
-    padding-bottom: 15px;
+    padding-bottom: 50px;
+    background: white;
 `

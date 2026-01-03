@@ -1,92 +1,83 @@
-import { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 
 interface Props {
     onClose: () => void
+    open: boolean
     threshold?: number
 }
 
-export function useBottomSheetDrag({ onClose, threshold = 120 }: Props) {
+type SheetState = 'hidden' | 'default' | 'expanded'
+
+export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
     const sheetRef = useRef<HTMLDivElement>(null)
-    const [isDragging, setIsDragging] = useState(false)
-    const [startY, setStartY] = useState(0)
-    const [currentY, setCurrentY]= useState(0)
+    const scrollRef = useRef<HTMLDivElement>(null)
+    const [sheet,setSheet] = useState<SheetState>('default')
+    const startRef = useRef(0)
+    const isClickRef = useRef(false)
 
-    const handleDragStart = (clientY: number) => {
-        setIsDragging(true);
-        setStartY(clientY);
-        setCurrentY(clientY);
-    };
+    const pointerDown = (e:React.PointerEvent) => {
+        e.currentTarget.setPointerCapture(e.pointerId)
+        startRef.current = e.clientY
 
-    const handleDragging = (clientY : number) => {
-        if(!isDragging) return
+        isClickRef.current = true
+    }
 
-        const deffY = clientY - startY
-        if(deffY > 0) {
-            setCurrentY(clientY)
+    const pointerMove = (e:React.PointerEvent) => {
+
+        if(!isClickRef.current) return
+
+        const moveDistance = e.clientY - startRef.current;
+
+        if(Math.abs(moveDistance) > 15) {
+            sheetRef.current!.style.transform = `translateY(${moveDistance}px)`
+            scrollRef.current!.style.overflowY = 'initial'
         }
     }
 
-    const handleDragEnd = () => {
-        if(!isDragging) return
+    const pointerUp = (e:React.PointerEvent) => {
 
-        const deffY = currentY - startY;
-        if(deffY > threshold) {
-            onClose()
-        } else {
-            setCurrentY(0)
-        }
+        if(!isClickRef.current) return
 
-        setIsDragging(false)
-        setStartY(0)
-        setCurrentY(0)
+        isClickRef.current = false
+
+        scrollRef.current!.style.overflowY = 'auto'
+
+        const moveDistance = e.clientY - startRef.current;
+        handleTranslate(moveDistance)
     }
 
-    // 마우스 이벤트
-    const handleMouseDown = (e: React.MouseEvent) => {
-        handleDragStart(e.clientY);
-    };
+    const handleTranslate = (moveDistance:number) => {
 
-    const handleMouseMove = (e: MouseEvent) => {
-        handleDragging(e.clientY);
-    };
+        if(moveDistance < -120) {
+            let result:SheetState = 'default'
+            if(sheet === 'default') result = 'expanded'
+            if(sheet === 'hidden') result = 'default'
 
-    const handleMouseUp = () => {
-        handleDragEnd();
-    };
-
-    // 터치 이벤트
-    const handleTouchStart = (e: React.TouchEvent) => {
-        handleDragStart(e.touches[0].clientY);
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-        handleDragging(e.touches[0].clientY);
-    };
-
-    const handleTouchEnd = () => {
-        handleDragEnd();
-    };
-
-    useEffect(() => {
-        if (isDragging) {
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
-        window.addEventListener('touchmove', handleTouchMove);
-        window.addEventListener('touchend', handleTouchEnd);
-
-            return () => {
-                window.removeEventListener('mousemove', handleMouseMove);
-                window.removeEventListener('mouseup', handleMouseUp);
-                window.removeEventListener('touchmove', handleTouchMove);
-                window.removeEventListener('touchend', handleTouchEnd);
-            };
+            setSheet(result)
+            sheetRef.current!.style.transform = `translateY(0)`
         }
-    }, [isDragging, startY, currentY]);
+        if(moveDistance > 120) {
+
+            let result:SheetState = 'default'
+
+            if(sheet === 'expanded') result = 'default'
+            if(sheet === 'default') result = 'hidden'
+
+            setSheet(result)
+            sheetRef.current!.style.transform = `translateY(0)`
+
+        }
+        if(moveDistance >= -120 && moveDistance <= 120) {
+            setSheet(prev=>prev)
+            sheetRef.current!.style.transform = `translateY(0)`
+        }
+    }
+
     return {
         sheetRef,
-        currentY,
-        handleMouseDown,
-        handleTouchStart
+        scrollRef,
+        sheet,
+        pointerDown, pointerMove, pointerUp
     }
 }
