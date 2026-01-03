@@ -71,9 +71,8 @@ const Wrapper = styled.div<{$open:boolean, $state:SheetState}>`
     border-radius: 16px 16px 0 0;
     z-index: 30;
     touch-action: none;
-    will-change: transform;
     transform: ${(p)=>p.$open ? 'translateY(0)' : 'translateY(100%)'};
-
+    will-change: transform;
     background-color: #fff;
     opacity: ${(p)=>p.$open ? 1 : 0}
 `

@@ -51,8 +51,14 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
         if(moveDistance < -120) {
             let result:SheetState = 'default'
-            if(sheet === 'default') result = 'expanded'
+
+            //위로 당김
+            //hidden
             if(sheet === 'hidden') result = 'default'
+            //default
+            if(sheet === 'default') result = 'expanded'
+            //expand
+            if(sheet === 'expanded') result = 'expanded'
 
             setSheet(result)
             sheetRef.current!.style.transform = `translateY(0)`
@@ -61,12 +67,16 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
             let result:SheetState = 'default'
 
-            if(sheet === 'expanded') result = 'default'
+            //아래로 당김
+            //hidden
+            if(sheet === 'hidden') result = 'hidden'
+            //default
             if(sheet === 'default') result = 'hidden'
+            //expand
+            if(sheet === 'expanded') result = 'default'
 
             setSheet(result)
             sheetRef.current!.style.transform = `translateY(0)`
-
         }
         if(moveDistance >= -120 && moveDistance <= 120) {
             setSheet(prev=>prev)
