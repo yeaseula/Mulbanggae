@@ -30,7 +30,7 @@ export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
 
     const handleClose = () => {
         setValue('') //input value초기화
-        useLocationStore.getState().setSearchState(false) //bottom sheet종료
+        //useLocationStore.getState().setSearchState(false) //bottom sheet종료
     }
 
     return (

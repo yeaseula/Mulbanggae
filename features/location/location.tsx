@@ -11,7 +11,9 @@ import styled from "styled-components"
 
 export function Location () {
 
-    const { searchState, locationMarkers } = useLocationStore()
+    const { searchState } = useLocationStore()
+
+    const [open, setOpen] = useState(false)
 
     //map 관련 코드
     const mapRef = useRef<HTMLDivElement>(null)
@@ -44,19 +46,25 @@ export function Location () {
 
     },[])
 
+    useEffect(()=>{
+        setOpen(searchState)
+    },[searchState])
+
 
     return (
         <>
         <MapArea ref={mapRef} />
         <LocationSearch map={locationRef.current}/>
+        <button className="fixed bottom-40 z-30 border-2"
+        onClick={()=>{
+            useLocationStore.getState().setSearchState(true)
+        }}
+        >다시보기</button>
         {mapReady &&
             <LocationButton map={locationRef.current} />
         }
-        <BottomSheet open={searchState} onClose={()=>{
-            if(!searchState) return
-            if(searchState) {
-                useLocationStore.getState().setSearchState(false)
-            }
+        <BottomSheet open={open} onClose={()=>{
+            useLocationStore.getState().setSearchState(false)
         }}>
             <LocationBottomSheet map={locationRef.current}/>
         </BottomSheet>

@@ -19,13 +19,16 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         handleRef,
         sheet,
         isDrag,
-        pointerDown, pointerMove, pointerUp
+        pointerDown, pointerMove, pointerUp, initialize
     } = useBottomSheetDrag({onClose, open})
 
     useEffect(()=>{
         if(!open) return
         const onKeyDown = (e:KeyboardEvent) => {
-            if (e.key === 'Escape') onClose()
+            if (e.key === 'Escape') {
+                onClose()
+                initialize()
+            }
         }
 
         document.addEventListener('keydown', onKeyDown);
@@ -59,7 +62,7 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
 
 const H = {
     hidden: '1px',
-    default: '40vh',
+    default: '30vh',
     expanded: '80vh'
 }
 
