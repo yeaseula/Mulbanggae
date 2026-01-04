@@ -31,7 +31,7 @@ export function Location () {
             locationRef.current = map
 
             await moveToCurrentLocation(map) //map center 순서보장을 위해
-            searchNearbyStores(map, '동물병원')
+            //searchNearbyStores(map, '동물병원')
             setMapReady(true)
         }
 
