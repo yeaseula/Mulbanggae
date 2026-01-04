@@ -33,7 +33,7 @@ export function LocationBottomSheet ({map}:{map : kakao.maps.Map | null}) {
                                     {ele.place_name}
                                 </Title>
                                 <button className="cursor-pointer text-sm py-1 px-3 rounded-sm bg-(--sub_light_color)"
-                                onClick={()=>{MoveLocation(map,ele.x,ele.y)}}
+                                onClick={()=>{MoveLocation(map,ele.x,ele.y,ele.id)}}
                                 >지도보기</button>
                             </div>
                             <div className="mt-3 text-xl">{ele.address_name}</div>

@@ -1,4 +1,4 @@
-import { useLocationStore } from "@/store/locationstore"
+import { useLocationStore, LocationMarker } from "@/store/locationstore"
 
 export function searchStores(
     map: kakao.maps.Map,
@@ -12,9 +12,9 @@ export function searchStores(
         keyword,
         (data, status) => {
             if (status !== kakao.maps.services.Status.OK) return
-            // console.log(status)
-            // console.log('-----------🚫🚫🚫🚫')
-            // console.log(data)
+            console.log(status)
+            console.log('-----------🚫🚫🚫🚫')
+            console.log(data)
 
             const MarkerCustom = (code:string) => {
                 let ImageSrc = ''
@@ -31,7 +31,7 @@ export function searchStores(
                 return MarkerImage
             }
 
-            let newMarker:kakao.maps.Marker[] = []
+            let newMarker:LocationMarker[] = []
 
             data.forEach((place) => {
                 const marker = new kakao.maps.Marker({
@@ -40,9 +40,15 @@ export function searchStores(
                         Number(place.y),
                         Number(place.x)
                     ),
-                    image: MarkerCustom(place.category_name)
+                    image: MarkerCustom(place.category_name),
                 })
-                newMarker.push(marker)
+
+                const markerRes = {
+                    markerId: place.id,
+                    marker : marker
+                }
+
+                newMarker.push(markerRes)
             })
 
             useLocationStore.getState().setSearchResult(data)

@@ -11,12 +11,13 @@ import styled from "styled-components"
 
 export function Location () {
 
-    const { searchState } = useLocationStore()
+    const { searchState, locationMarkers } = useLocationStore()
 
     //map 관련 코드
     const mapRef = useRef<HTMLDivElement>(null)
     const locationRef = useRef<kakao.maps.Map | null>(null)
     const [mapReady,setMapReady] = useState<boolean>(false)
+
 
     useEffect(()=>{
         if (!mapRef.current) return

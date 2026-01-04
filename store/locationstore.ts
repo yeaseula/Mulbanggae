@@ -2,17 +2,22 @@ import { create } from "zustand";
 
 type SearchStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error'
 
+export interface LocationMarker {
+    markerId : string
+    marker : kakao.maps.Marker
+}
+
 interface LocationState {
     searchState: boolean //값을 찾고있는지
     searchStatus: SearchStatus
     searchResult: kakao.maps.services.PlacesSearchResult | null
     error: string | null
     markers: kakao.maps.Marker[] | null
-    locationMarkers: kakao.maps.Marker[] | null
+    locationMarkers: LocationMarker[] | null
     setSearchState: (value:boolean) => void
     setSearchResult: (data:any) => void
     setMarkers: (value: kakao.maps.Marker[]) => void
-    setLocationMarkers: (value: kakao.maps.Marker[]) => void
+    setLocationMarkers: (value: LocationMarker[]) => void
     clearMarkers: () => void
     clearLocationMarkers: () => void
 }
@@ -34,7 +39,7 @@ export const useLocationStore = create<LocationState>((set)=>({
     setLocationMarkers: (value) => set(()=>({ locationMarkers: value })),
     clearMarkers: () => set(()=>({ markers: null })),
     clearLocationMarkers: () => set((state)=>{
-        state.locationMarkers?.forEach((marker)=>marker.setMap(null))
+        state.locationMarkers?.forEach((m)=>m.marker.setMap(null))
         return { locationMarkers: null }
     })
 }))
