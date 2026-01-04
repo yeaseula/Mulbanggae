@@ -11,7 +11,7 @@ import styled from "styled-components"
 
 export function Location () {
 
-    const { searchState } = useLocationStore()
+    const { searchState, searchResult } = useLocationStore()
 
     const [open, setOpen] = useState(false)
 
@@ -55,11 +55,14 @@ export function Location () {
         <>
         <MapArea ref={mapRef} />
         <LocationSearch map={locationRef.current}/>
+        {searchResult &&
+
         <button className="fixed bottom-40 z-30 border-2"
         onClick={()=>{
             useLocationStore.getState().setSearchState(true)
         }}
         >다시보기</button>
+        }
         {mapReady &&
             <LocationButton map={locationRef.current} />
         }

@@ -26,8 +26,11 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         if(!open) return
         const onKeyDown = (e:KeyboardEvent) => {
             if (e.key === 'Escape') {
+                //
                 onClose()
-                initialize()
+                requestAnimationFrame(()=>{
+                    initialize()
+                })
             }
         }
 
