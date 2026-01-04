@@ -1,7 +1,7 @@
 "use client"
 import { ReactNode, useEffect } from "react"
 import { useBottomSheetDrag } from "./use-bottomsheet-drag"
-import styled from "styled-components"
+import styled, {keyframes} from "styled-components"
 
 type BottomSheetProps = {
     open: boolean
@@ -18,6 +18,7 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         contentRef,
         handleRef,
         sheet,
+        isDrag,
         pointerDown, pointerMove, pointerUp
     } = useBottomSheetDrag({onClose, open})
 
@@ -39,6 +40,7 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         ref={sheetRef}
         $state={sheet}
         $open={open}
+        $isdrag={isDrag}
         onPointerDown={pointerDown}
         onPointerMove={pointerMove}
         onPointerUp={pointerUp}
@@ -64,7 +66,7 @@ const H = {
     expanded: '80vh'
 }
 
-const Wrapper = styled.div<{$open:boolean, $state:SheetState}>`
+const Wrapper = styled.div<{$open:boolean, $state:SheetState, $isdrag: boolean}>`
     max-width: 390px;
     width: 100%;
     position: fixed;
@@ -72,17 +74,49 @@ const Wrapper = styled.div<{$open:boolean, $state:SheetState}>`
     border-radius: 16px 16px 0 0;
     z-index: 30;
     touch-action: none;
+    user-select: none;
     transform: ${(p)=>p.$open ? 'translateY(0)' : 'translateY(100%)'};
+    transition: ${(p)=>p.$isdrag ? 'none' : 'transform 0.3s ease'};
     will-change: transform;
     background-color: #fff;
     opacity: ${(p)=>p.$open ? 1 : 0};
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 `
+const slideUpSoft = keyframes`
+    0% {
+        height: var(--target-height);
+    }
+    80% {
+        height: calc(var(--target-height) - 8px);
+    }
+    100% {
+        height: var(--target-height);
+    }
+`
+const slideDownSoft = keyframes`
+    0% {
+        height: var(--target-height);
+    }
+    55% {
+        height: calc(var(--target-height) + 8px);
+    }
+    100% {
+        height: var(--target-height);
+    }
+`
+
 const InnerContainer = styled.div<{$state:SheetState}>`
     overflow-y: auto;
-    max-height: ${(p)=>H[p.$state]};
-    transition: height 0.4s linear;
+    max-height: calc(${(p)=>H[p.$state]} + 8px);
     background: white;
+    &.slideup {
+        --target-height : ${(p)=>H[p.$state]};
+        animation: ${slideUpSoft} 0.3s ease-in-out;
+    }
+    &.slidedown {
+        --target-height : ${(p)=>H[p.$state]};
+        animation: ${slideDownSoft} 0.3s ease-in-out;
+    }
     &::-webkit-scrollbar {
         width: 2px;
     }

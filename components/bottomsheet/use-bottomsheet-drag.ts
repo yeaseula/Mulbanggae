@@ -1,3 +1,4 @@
+import { countReset } from 'console'
 import React, { useRef, useState, useEffect } from 'react'
 
 interface Props {
@@ -15,17 +16,24 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
     const sheetRef = useRef<HTMLDivElement>(null)
     const contentRef = useRef<HTMLDivElement>(null)
     const handleRef = useRef<HTMLDivElement>(null)
+    // === 초기화 값이 존재 ===
     const [sheet,setSheet] = useState<SheetState>('default')
     const startRef = useRef(0)
     const isClickRef = useRef(false)
     const dragModeRef = useRef<DragState>(null)
     const dragsourceRef = useRef<DragSource>(null)
+    const [isDrag,setIsDrag] = useState(false)
 
     const pointerDown = (e:React.PointerEvent) => {
         e.currentTarget.setPointerCapture(e.pointerId)
         startRef.current = e.clientY
         isClickRef.current = true
         dragModeRef.current = null
+
+        contentRef.current!.classList.remove('slideup')
+        contentRef.current!.classList.remove('slidedown')
+
+        setIsDrag(false)
 
         const clickTarget = e.target as Node
 
@@ -69,12 +77,14 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         if(Math.abs(moveDistance) <= 15) return // 드래그 중인가?
 
         //console.log('----드래그중 통과')
-        console.log(dragModeRef.current + 'drag mode 첫값')
+        setIsDrag(true)
+
         if(!dragModeRef.current) {
             if(dragsourceRef.current === 'handle') {
                 dragModeRef.current = 'sheet'
 
             } else if(dragsourceRef.current === 'content'){
+
                 if(DragSheet && moveDistance > 0) {
                     dragModeRef.current = 'sheet'
                 } else {
@@ -84,9 +94,11 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         }
 
         if(dragModeRef.current === 'sheet') {
-            if(sheet === 'expanded' && moveDistance < -75 ) return
+            if(sheet === 'expanded' && moveDistance < -95 ) return
+
             sheetRef.current!.style.transform = `translateY(${moveDistance}px)`
             contentRef.current!.style.overflowY = 'initial'
+
         }
     }
 
@@ -105,6 +117,7 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
     }
 
     const handleTranslate = (moveDistance:number) => {
+
         if(moveDistance < -120) {
             let result:SheetState = 'default'
 
@@ -118,6 +131,9 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
             setSheet(result)
             sheetRef.current!.style.transform = `translateY(0)`
+            requestAnimationFrame(() => {
+                contentRef.current!.classList.add('slideup')
+            })
         }
         if(moveDistance > 120) {
 
@@ -133,6 +149,9 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
             setSheet(result)
             sheetRef.current!.style.transform = `translateY(0)`
+            requestAnimationFrame(() => {
+                contentRef.current!.classList.add('slidedown')
+            })
         }
         if(moveDistance >= -120 && moveDistance <= 120) {
             setSheet(prev=>prev)
@@ -145,6 +164,7 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         contentRef,
         handleRef,
         sheet,
+        isDrag,
         pointerDown, pointerMove, pointerUp
     }
 }
