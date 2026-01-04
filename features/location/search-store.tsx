@@ -10,9 +10,9 @@ export function searchStores(
         keyword,
         (data, status) => {
             if (status !== kakao.maps.services.Status.OK) return
-            console.log(status)
-            console.log('-----------🚫🚫🚫🚫')
-            console.log(data)
+            // console.log(status)
+            // console.log('-----------🚫🚫🚫🚫')
+            // console.log(data)
 
             const MarkerCustom = (code:string) => {
                 let ImageSrc = ''

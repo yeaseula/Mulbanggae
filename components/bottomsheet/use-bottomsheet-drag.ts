@@ -34,7 +34,7 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
     },[open])
 
     const pointerDown = (e:React.PointerEvent) => {
-        e.currentTarget.setPointerCapture(e.pointerId)
+
         startRef.current = e.clientY
         isClickRef.current = true
         dragModeRef.current = null
@@ -59,7 +59,7 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
     const pointerMove = (e:React.PointerEvent) => {
 
         if(!isClickRef.current) return
-
+        e.currentTarget.setPointerCapture(e.pointerId)
         const moveDistance = e.clientY - startRef.current;
         //moveDistance > 0 아래로 내림
         const DragSheet = contentRef.current!.scrollTop === 0 //스크롤이 맨 위?

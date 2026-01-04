@@ -10,8 +10,5 @@ export function MoveLocation (
 
     const moveLatLng = new window.kakao.maps.LatLng(lat, lng)
 
-    map.setLevel(3, { animate: true })
-    setTimeout(()=>{
-        map.panTo(moveLatLng)
-    },100)
+    map.panTo(moveLatLng)
 }
