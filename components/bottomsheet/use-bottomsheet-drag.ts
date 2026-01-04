@@ -24,6 +24,15 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
     const dragsourceRef = useRef<DragSource>(null)
     const [isDrag,setIsDrag] = useState(false)
 
+    useEffect(()=>{
+        setSheet('default')
+        startRef.current = 0
+        isClickRef.current = false
+        dragModeRef.current = null
+        dragsourceRef.current = null
+        setIsDrag(false)
+    },[open])
+
     const pointerDown = (e:React.PointerEvent) => {
         e.currentTarget.setPointerCapture(e.pointerId)
         startRef.current = e.clientY

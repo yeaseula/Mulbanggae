@@ -49,9 +49,6 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         >
         <Handle
             ref={handleRef}
-            // onPointerDown={pointerDown}
-            // onPointerMove={pointerMove}
-            // onPointerUp={pointerUp}
         />
         <InnerContainer ref={contentRef} $state={sheet}>
             <Content >{children}</Content>

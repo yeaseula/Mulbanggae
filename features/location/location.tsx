@@ -12,16 +12,10 @@ import styled from "styled-components"
 
 export function Location () {
 
-    const {searchResult} = useLocationStore()
+    const { searchState } = useLocationStore()
 
     //bottom sheet 관련 코드
     const [open,setOpen] = useState(false)
-
-    useEffect(()=>{
-        if(searchResult.length > 0 ) {
-            setOpen(true)
-        }
-    },[searchResult])
 
     //map 관련 코드
     const mapRef = useRef<HTMLDivElement>(null)
@@ -48,13 +42,17 @@ export function Location () {
 
     return (
         <>
-        <MapArea ref={mapRef}>
-        </MapArea>
+        <MapArea ref={mapRef} />
         <LocationSearch map={locationRef.current}/>
         {mapReady &&
-        <LocationButton map={locationRef.current} />
+            <LocationButton map={locationRef.current} />
         }
-        <BottomSheet open={open} onClose={()=>setOpen(false)}>
+        <BottomSheet open={searchState} onClose={()=>{
+            if(!searchState) return
+            if(searchState) {
+                useLocationStore.getState().setSearchState(false)
+            }
+        }}>
             <LocationBottomSheet />
         </BottomSheet>
         </>

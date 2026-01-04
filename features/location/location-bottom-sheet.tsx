@@ -6,12 +6,24 @@ import styled from "styled-components"
 
 export function LocationBottomSheet () {
 
-    const { searchResult } = useLocationStore()
+    const { searchResult, searchStatus } = useLocationStore()
 
-    if(searchResult.length > 0) {
+    if(searchStatus === 'error') {
+        return <>에러가 발생했습니다.</>
+    }
+
+    if(searchStatus === 'empty') {
+        return <>검색 결과가 없습니다</>
+    }
+
+    if(searchStatus === 'loading') {
+
+    }
+
+    if(searchStatus === 'success') {
         return (
             <>
-            {searchResult.map((ele)=>(
+            {searchResult?.map((ele)=>(
                 <div key={ele.id} className="flex justify-between gap-3 pt-6 px-4">
                     <div className="flex flex-col justify-between">
                         <div>
@@ -33,6 +45,8 @@ export function LocationBottomSheet () {
             </>
         )
     }
+
+
 }
 
 const ButtonWrap = styled.div`

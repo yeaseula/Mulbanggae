@@ -2,6 +2,7 @@ export function searchNearbyStores(
     map: kakao.maps.Map,
     keyword: any
 ) {
+
     const places = new kakao.maps.services.Places()
     places.keywordSearch(
         keyword,

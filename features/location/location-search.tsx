@@ -1,27 +1,38 @@
 "use client"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { searchStores } from "./search-store"
+import { useLocationStore } from "@/store/locationstore"
 import styled from "styled-components"
-import { RiSearch2Line } from "@remixicon/react"
+import { RiSearch2Line, RiCloseLine } from "@remixicon/react"
 
 export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
 
     const valRef = useRef<string | number>(null)
     const [value,setValue] = useState<string | number | null>(null)
 
+    let debounce = false
+
     const handleInput = (e:React.ChangeEvent<HTMLInputElement>) => {
         //valRef.current = e.currentTarget.value
         setValue(e.currentTarget.value)
     }
+
+    useEffect(()=>{console.log(value)},[value])
+
     const handleSearch = () => {
+        // if(debounce) return
+        // debounce = true;
         if(!map) return
         if(!value) {
             alert('검색어를 입력해주세요.')
             return
         }
-
         searchStores(map,value);
+    }
 
+    const handleClose = () => {
+        setValue(null) //input value초기화
+        useLocationStore.getState().setSearchState(false) //bottom sheet종료
     }
 
     return (
@@ -32,7 +43,14 @@ export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
                 value={value || ''}
                 onChange={handleInput}
                 />
-                <button type="button" className="cursor-pointer" onClick={handleSearch}><RiSearch2Line size={24}></RiSearch2Line></button>
+                {(value || value !== '') &&
+                    <button type="button" className="cursor-pointer" onClick={handleClose}>
+                        <RiCloseLine size={24} />
+                    </button>
+                }
+                <button type="button" className="cursor-pointer" onClick={handleSearch}>
+                    <RiSearch2Line size={24} />
+                </button>
             </SearchForm>
         </FloatingSearch>
     )
