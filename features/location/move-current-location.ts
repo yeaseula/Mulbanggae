@@ -1,5 +1,13 @@
+
+
 import { getCurrentPosition } from "./get-current-position"
+import { useLocationStore } from "@/store/locationstore"
+
 export async function moveToCurrentLocation(map: kakao.maps.Map):Promise<void> {
+
+    const mymarker = useLocationStore.getState().markers
+
+    if(mymarker) return
 
     try {
         const pos = await getCurrentPosition()
@@ -12,11 +20,14 @@ export async function moveToCurrentLocation(map: kakao.maps.Map):Promise<void> {
         const ImageSize = new kakao.maps.Size(48,62)
         const MarkerImage = new kakao.maps.MarkerImage(ImageSrc,ImageSize)
 
-        new window.kakao.maps.Marker({
+        const myMarker = new window.kakao.maps.Marker({
             map,
             position: latlng,
             image: MarkerImage
         })
+
+        useLocationStore.getState().setMarkers(myMarker)
+
     } catch {
         // 실패해도 시 기본위치 유지
     }

@@ -13,9 +13,6 @@ export function Location () {
 
     const { searchState } = useLocationStore()
 
-    //bottom sheet 관련 코드
-    const [open,setOpen] = useState(false)
-
     //map 관련 코드
     const mapRef = useRef<HTMLDivElement>(null)
     const locationRef = useRef<kakao.maps.Map | null>(null)
@@ -35,6 +32,14 @@ export function Location () {
         }
 
         mapload()
+
+        return () => {
+            //search 상태 초기화
+            useLocationStore.getState().setSearchState(false)
+
+            //전역 marker 비우기
+            useLocationStore.getState().clearMarkers()
+        }
 
     },[])
 
