@@ -7,7 +7,6 @@ import { InitMap } from "./initmap"
 import { LocationButton } from "./location-button"
 import { LocationBottomSheet } from "./location-bottom-sheet"
 import { moveToCurrentLocation } from "./move-current-location"
-import { searchNearbyStores } from "./search-near-stores"
 import styled from "styled-components"
 
 export function Location () {
@@ -53,7 +52,7 @@ export function Location () {
                 useLocationStore.getState().setSearchState(false)
             }
         }}>
-            <LocationBottomSheet />
+            <LocationBottomSheet map={locationRef.current}/>
         </BottomSheet>
         </>
     )

@@ -4,9 +4,6 @@ export function searchStores(
     map: kakao.maps.Map,
     keyword: any
 ) {
-
-
-
     const places = new kakao.maps.services.Places()
 
     places.keywordSearch(
@@ -33,9 +30,8 @@ export function searchStores(
             }
 
             data.forEach((place) => {
-
                 const marker = new kakao.maps.Marker({
-                    map,
+                    map: map,
                     position: new kakao.maps.LatLng(
                         Number(place.y),
                         Number(place.x)

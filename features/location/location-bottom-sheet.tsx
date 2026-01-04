@@ -1,10 +1,11 @@
 "use client"
 import Link from "next/link"
 import { useLocationStore } from "@/store/locationstore"
+import { MoveLocation } from "./move-location"
 import { RiHeartLine, RiPhoneLine, RiLinksLine } from "@remixicon/react"
 import styled from "styled-components"
 
-export function LocationBottomSheet () {
+export function LocationBottomSheet ({map}:{map : kakao.maps.Map | null}) {
 
     const { searchResult, searchStatus } = useLocationStore()
 
@@ -24,10 +25,17 @@ export function LocationBottomSheet () {
         return (
             <>
             {searchResult?.map((ele)=>(
-                <div key={ele.id} className="flex justify-between gap-3 pt-6 px-4">
-                    <div className="flex flex-col justify-between">
+                <div key={ele.id} className="flex justify-between gap-3 pt-6 px-4 mb-3">
+                    <div className="relative flex flex-col justify-between">
                         <div>
-                            <div className="font-bold">{ele.place_name}</div>
+                            <div className="flex items-center gap-2">
+                                <Title>
+                                    {ele.place_name}
+                                </Title>
+                                <button className="cursor-pointer text-sm py-1 px-3 rounded-sm bg-(--sub_light_color)"
+                                onClick={()=>{MoveLocation(map,ele.x,ele.y)}}
+                                >지도보기</button>
+                            </div>
                             <div className="mt-3 text-xl">{ele.address_name}</div>
                         </div>
 
@@ -40,16 +48,26 @@ export function LocationBottomSheet () {
                     <div className="w-[100px] h-[100px] rounded-2xl bg-amber-200">
 
                     </div>
+
                 </div>
             ))}
             </>
         )
     }
-
-
 }
 
+const Title = styled.p`
+    font-weight: bold;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`
+
 const ButtonWrap = styled.div`
+    position: relative;
+    z-index: 6;
     > button, a {
         width: 25px;
         height: 25px;
