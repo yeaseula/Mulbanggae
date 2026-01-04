@@ -8,6 +8,7 @@ import { LocationButton } from "./location-button"
 import { LocationBottomSheet } from "./location-bottom-sheet"
 import { moveToCurrentLocation } from "./move-current-location"
 import styled from "styled-components"
+import { RiListCheck } from "@remixicon/react"
 
 export function Location () {
 
@@ -20,6 +21,7 @@ export function Location () {
     const locationRef = useRef<kakao.maps.Map | null>(null)
     const [mapReady,setMapReady] = useState<boolean>(false)
 
+    const ReListButtonState = !!searchResult && !searchState
 
     useEffect(()=>{
         if (!mapRef.current) return
@@ -55,13 +57,16 @@ export function Location () {
         <>
         <MapArea ref={mapRef} />
         <LocationSearch map={locationRef.current}/>
-        {searchResult &&
+        {(searchResult && !searchState) &&
 
-        <button className="fixed bottom-40 z-30 border-2"
-        onClick={()=>{
-            useLocationStore.getState().setSearchState(true)
-        }}
-        >다시보기</button>
+        <ReListButton
+            $open={ReListButtonState}
+            aria-hidden={!ReListButtonState}
+            onClick={()=>{
+                useLocationStore.getState().setSearchState(true)
+            }}
+        ><RiListCheck size={14} className="relative bottom-0.5"/>다시보기
+        </ReListButton>
         }
         {mapReady &&
             <LocationButton map={locationRef.current} />
@@ -78,4 +83,22 @@ export function Location () {
 const MapArea = styled.div`
     width: 100%;
     height: 100%;
+`
+
+const ReListButton = styled.button<{$open:boolean}>`
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    position: absolute;
+    top: 120px;
+    right: 16px;
+    z-index: 30;
+    border-radius: 5px;
+    background-color: var(--main_color);
+    font-size: 1.4rem;
+    color: white;
+    padding: 1px 3px 0;
+    cursor: pointer;
+    opacity: ${(p)=>p.$open ? 1 : 0};
+    transition: opacity 0.35s ease-in-out;
 `
