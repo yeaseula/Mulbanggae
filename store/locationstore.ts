@@ -37,7 +37,10 @@ export const useLocationStore = create<LocationState>((set)=>({
     setSearchState: (value)=>set(()=>({ searchState: value })),
     setMarkers: (value) => set(()=>({ markers: value })),
     setLocationMarkers: (value) => set(()=>({ locationMarkers: value })),
-    clearMarkers: () => set(()=>({ markers: null })),
+    clearMarkers: () => set((state)=>{
+        state.markers?.forEach((m)=>m.setMap(null))
+        return { markers : null }
+    }),
     clearLocationMarkers: () => set((state)=>{
         state.locationMarkers?.forEach((m)=>m.marker.setMap(null))
         return { locationMarkers: null }
