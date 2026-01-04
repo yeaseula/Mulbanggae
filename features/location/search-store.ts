@@ -6,6 +6,8 @@ export function searchStores(
 ) {
     const places = new kakao.maps.services.Places()
 
+    useLocationStore.getState().clearLocationMarkers()
+
     places.keywordSearch(
         keyword,
         (data, status) => {
@@ -29,6 +31,8 @@ export function searchStores(
                 return MarkerImage
             }
 
+            let newMarker:kakao.maps.Marker[] = []
+
             data.forEach((place) => {
                 const marker = new kakao.maps.Marker({
                     map: map,
@@ -38,10 +42,12 @@ export function searchStores(
                     ),
                     image: MarkerCustom(place.category_name)
                 })
+                newMarker.push(marker)
             })
 
             useLocationStore.getState().setSearchResult(data)
             useLocationStore.getState().setSearchState(true)
+            useLocationStore.getState().setLocationMarkers(newMarker)
         },
         {
             location: map.getCenter(),

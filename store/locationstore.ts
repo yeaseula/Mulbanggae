@@ -8,10 +8,13 @@ interface LocationState {
     searchResult: kakao.maps.services.PlacesSearchResult | null
     error: string | null
     markers: kakao.maps.Marker[] | null
+    locationMarkers: kakao.maps.Marker[] | null
     setSearchState: (value:boolean) => void
     setSearchResult: (data:any) => void
     setMarkers: (value: kakao.maps.Marker[]) => void
+    setLocationMarkers: (value: kakao.maps.Marker[]) => void
     clearMarkers: () => void
+    clearLocationMarkers: () => void
 }
 
 export const useLocationStore = create<LocationState>((set)=>({
@@ -20,6 +23,7 @@ export const useLocationStore = create<LocationState>((set)=>({
     searchResult: null,
     error: null,
     markers: null,
+    locationMarkers: null,
     setSearchResult: (data) => set({
         searchStatus: data.length === 0 ? 'empty' : 'success',
         searchResult: data ,
@@ -27,5 +31,10 @@ export const useLocationStore = create<LocationState>((set)=>({
     }),
     setSearchState: (value)=>set(()=>({ searchState: value })),
     setMarkers: (value) => set(()=>({ markers: value })),
-    clearMarkers: () => set(()=>({ markers: null }))
+    setLocationMarkers: (value) => set(()=>({ locationMarkers: value })),
+    clearMarkers: () => set(()=>({ markers: null })),
+    clearLocationMarkers: () => set((state)=>{
+        state.locationMarkers?.forEach((marker)=>marker.setMap(null))
+        return { locationMarkers: null }
+    })
 }))
