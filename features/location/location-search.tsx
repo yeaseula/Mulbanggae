@@ -8,7 +8,7 @@ import { RiSearch2Line, RiCloseLine } from "@remixicon/react"
 export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
 
     const valRef = useRef<string | number>(null)
-    const [value,setValue] = useState<string | number | null>(null)
+    const [value,setValue] = useState<string | number | null>('')
 
     let debounce = false
 
@@ -16,8 +16,6 @@ export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
         //valRef.current = e.currentTarget.value
         setValue(e.currentTarget.value)
     }
-
-    useEffect(()=>{console.log(value)},[value])
 
     const handleSearch = () => {
         // if(debounce) return
@@ -31,7 +29,7 @@ export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
     }
 
     const handleClose = () => {
-        setValue(null) //input value초기화
+        setValue('') //input value초기화
         useLocationStore.getState().setSearchState(false) //bottom sheet종료
     }
 
@@ -43,7 +41,7 @@ export function LocationSearch({map}:{ map : kakao.maps.Map | null}) {
                 value={value || ''}
                 onChange={handleInput}
                 />
-                {(value || value !== '') &&
+                {value !== '' &&
                     <button type="button" className="cursor-pointer" onClick={handleClose}>
                         <RiCloseLine size={24} />
                     </button>
