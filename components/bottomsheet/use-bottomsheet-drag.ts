@@ -1,5 +1,6 @@
+'use client'
+
 import { useLocationStore } from '@/store/locationstore'
-import { countReset } from 'console'
 import React, { useRef, useState, useEffect } from 'react'
 
 
@@ -17,7 +18,9 @@ export function useBottomSheetDrag() {
 
     // === 초기화 값이 존재 ===
     const [sheet,setSheet] = useState<SheetState>('default')
+    const seetRef = useRef<SheetState>('default')
     const startRef = useRef(0)
+    const startHeightRef = useRef(0)
     const isClickRef = useRef(false)
     const dragModeRef = useRef<DragState>(null)
     const dragsourceRef = useRef<DragSource>(null)
@@ -25,18 +28,19 @@ export function useBottomSheetDrag() {
     const [isDrag,setIsDrag] = useState(false)
     const ContentLengthRef = useRef<number>(0)
 
-    const MAXHEIGHT = {
+    const [MAXHEIGHT, setMaxHeight] = useState({
         short: {
-            hidden: '1px',
-            default: `${ContentLengthRef.current}px`,
-            expanded: ''
+            hidden: 33,
+            default: ContentLengthRef.current + 33,
+            expanded: 0
         },
         long: {
-            hidden: '1px',
-            default: '30vh',
-            expanded: 'calc(100vh - 40px)'
+            hidden: 33,
+            default: 33,
+            expanded: 0
         }
-    }
+    })
+
     //sheet 내용물에 따라 달라짐
     //초기 마운트 이후 고정
     //데이터값 변경 시 재판별
@@ -55,29 +59,41 @@ export function useBottomSheetDrag() {
         // console.log(ContentLengthRef.current + ': 콘텐츠 길이')
         // console.log('----🚀🚀🚀🚀🚀')
 
+        setMaxHeight({
+            short: {
+                hidden: 33,
+                default: ContentLengthRef.current + 33,
+                expanded: ContentLengthRef.current + 33
+            },
+            long: {
+                hidden: 33,
+                default: window.innerHeight * 0.3 + 33,
+                expanded: window.innerHeight * 0.8 - 44
+            }
+        })
+        //검색값이 바뀌면 무조건 default 높이로
+        ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHT[sheetLength.current].default}px`)
+
     },[searchResult])
 
+    const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+
     const initialize = () => {
-        setSheet('default')
+        seetRef.current = 'default'
+        ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHT[sheetLength.current].default}px`)
         startRef.current = 0
         isClickRef.current = false
         dragModeRef.current = null
         dragsourceRef.current = null
-        sheetLength.current = 'long'
-        setIsDrag(false)
-        sheetRef.current!.style.transform = ``
     }
 
     const pointerDown = (e:React.PointerEvent) => {
-
-        startRef.current = e.clientY
+        startRef.current = e.clientY //
+        startHeightRef.current = ScrollRef.current!.getBoundingClientRect().height
         isClickRef.current = true
-        dragModeRef.current = null
-
-        ScrollRef.current!.classList.remove('slideup')
-        ScrollRef.current!.classList.remove('slidedown')
-
-        setIsDrag(false)
+        dragModeRef.current = null //
+        //console.log(isClickRef + ': 클릭상태인가? 🚀🚀🚀🚀🚀🚀')
+        setIsDrag(true) //🚀
 
         const clickTarget = e.target as Node
 
@@ -88,49 +104,27 @@ export function useBottomSheetDrag() {
         } else {
             dragsourceRef.current = null
         }
-        //location에서 사용되는지, 일반모드로 사용되는지
-        //location에서 contents 내용이 스크롤되지않을때
     }
 
     const pointerMove = (e:React.PointerEvent) => {
 
+        //console.log(isClickRef.current + ': 클릭상태 🚫🚫🚫')
         if(!isClickRef.current) return
         e.currentTarget.setPointerCapture(e.pointerId)
         const moveDistance = e.clientY - startRef.current;
-        //moveDistance > 0 아래로 내림
-
-        //sheet location ? default 조건분기
-        // default 단순 close open기능만 가능
-
-        //location 시트 길이에 따라 dragup 가능,불가능
-
-        //dragmod ? 시작점이 handle인가? -> sheet
-        //시작점이 content인가? -> 다른 조건 분기
-
-        //default
-        //scroll 맨 위일때
-        //아래로 내리면 hidden으로 ->'sheet'
-        //위로 올리면 스크롤 -> 'content'
-        //scroll 중간일때 -> 계속 스크롤상태 -> 'content'
-        //scroll 아래일때 -> 계속 스크롤상태 => 'content'
-
-        //expanded
-        //scroll 맨 위일때
-        //아래로 내리면 default로
-        //위로 올리면 스크롤
-
-        //hidden
-        //scroll 상관없이
-        //위로 올리면 default
-        //아래로 내리면 변화없음
-
-        console.log(sheetLength.current)
-
         const DragSheet = ScrollRef.current!.scrollTop === 0 //스크롤이 맨 위?
+        const startHeight = startHeightRef.current
+        const nextHeight = clamp (
+            startHeight - moveDistance, // 500px에 위로 10이라면 510px
+            MAXHEIGHT[sheetLength.current].hidden, // 33px
+            MAXHEIGHT[sheetLength.current].expanded // 80vh + 33px ex)800px
+        ) // 33px ~800px 내에선 실제 움직인만큼, 33px아래에선 33px 800px위에선 800px 선택
 
-        if(Math.abs(moveDistance) <= 15) return // 드래그 중인가?
+        //console.log(Math.abs(moveDistance) + ': 드래그중인가? 😇😇😇')
+        if(Math.abs(moveDistance) <= 10) return // 드래그 중인가?
 
         //console.log('----드래그중 통과')
+        //console.log(isClickRef.current + ': 움직이고있는데 클릭중? 🔜🔜🔜')
         setIsDrag(true)
 
         if(!dragModeRef.current) {
@@ -148,26 +142,48 @@ export function useBottomSheetDrag() {
         }
 
         if(dragModeRef.current === 'sheet') {
-            if(sheet === 'expanded' && moveDistance < -15 ) return
-            if(sheetLength.current === 'short'
-                && sheet === 'default'
-                && moveDistance < -15) return
-            if(sheetLength.current === 'short'
-                && sheet === 'hidden'
-                && moveDistance < -180
-            ) return
-            sheetRef.current!.style.transform = `translateY(${moveDistance}px)`
+            if(startHeight - moveDistance > MAXHEIGHT[sheetLength.current].expanded) return
+            //지금 높이가 현재 상황의 최대값보다 크면 리턴
+            if(startHeight - moveDistance < MAXHEIGHT[sheetLength.current].hidden) return
+            //지금 높이가 현재 상황의 최소값보다 작으면 리턴
+
+            //console.log(startHeight + ':지금높이????????')
+            //console.log(startHeight - moveDistance + ':🚀🚀🚀🚀')
+            //console.log(MAXHEIGHT[sheetLength.current].expanded + ':최대높이 🐠🐠🐠')
+            //console.log( MAXHEIGHT[sheetLength.current].hidden + ': 최소높이 ⚡⚡⚡')
+
+            // if(sheetLength.current === 'short'
+            //     && sheet === 'default'
+            //     && moveDistance < -15) return
+            // if(sheetLength.current === 'short'
+            //     && sheet === 'hidden'
+            //     && moveDistance < -100
+            // ) return
+
+            //const startHeight = MAXHEIGHT[sheetLength.current][sheet]
+            //ScrollRef.current!.style.setProperty('--drag-y',`${moveDistance}px`)
+            //transform은 실제 움직인만큼
+            ScrollRef.current!.style.setProperty('--drag-height', `${startHeight - moveDistance}px`)
             ScrollRef.current!.style.overflowY = 'initial'
         }
-
     }
 
     const pointerUp = (e:React.PointerEvent) => {
 
         if(!isClickRef.current) return
-        isClickRef.current = false
+        isClickRef.current = false //클릭 여부 확인 해제
+        //console.log(isClickRef.current + ': 마우스 해제인데 클릭상태? 🩷🩷🩷')
 
-        if(dragModeRef.current !== 'sheet') return
+        if(!isDrag) return
+        setIsDrag(false) // 드래그중인지 여부 확인 해제
+
+        if(dragModeRef.current !== 'sheet') return //시트모드가 아니라면 움직이지않음
+
+        const currentHeight =  ScrollRef.current!.getBoundingClientRect().height
+
+        // //ScrollRef.current!.style.setProperty('--drag-y',`0px`)
+        ScrollRef.current!.style.setProperty('--drag-height',`${currentHeight}px`)
+        //마우스 놓은 시점의 높이에서 시작
 
         ScrollRef.current!.style.overflowY = 'auto'
 
@@ -178,53 +194,39 @@ export function useBottomSheetDrag() {
 
     const handleTranslate = (moveDistance:number) => {
 
-        if(moveDistance < -120) {
+        const currentHeight = ScrollRef.current!.getBoundingClientRect().height
 
-            let result:SheetState = 'default'
+        const hiddenH = MAXHEIGHT[sheetLength.current].hidden
+        const defaultH = MAXHEIGHT[sheetLength.current].default
+        const expandedH = MAXHEIGHT[sheetLength.current].expanded
 
-            if(sheetLength.current === 'long') {
-                //위로 당김
-                //hidden
-                if(sheet === 'hidden') result = 'default'
-                //default
-                if(sheet === 'default') result = 'expanded'
-                //expand
-                if(sheet === 'expanded') result = 'expanded'
+        //console.log(moveDistance + ':해제 후 움직인 거리 계산 😭😭')
+
+        //console.log(moveDistance + ': 얼마나 움직였는지')
+            //console.log(currentHeight + ': g현재높이ㅣㅣㅣㅣ')
+            //console.log((defaultH + hiddenH) / 2 + ': 최소값과 중간의 평균 😄')
+            // let result:SheetState = 'default'
+
+            if(currentHeight >= (defaultH + expandedH) / 2) {
+                setSheet('expanded')
+                seetRef.current = 'expanded'
+            } else if(currentHeight >= (defaultH + hiddenH) / 2) {
+                setSheet('default')
+                seetRef.current = 'default'
             } else {
-                if(sheet === 'hidden') result = 'default'
+                setSheet('hidden')
+                seetRef.current = 'hidden'
             }
 
-            setSheet(result)
-            sheetRef.current!.style.transform = `translateY(0)`
-            requestAnimationFrame(() => {
-                ScrollRef.current!.classList.add('slideup')
+            const nextHeight = MAXHEIGHT[sheetLength.current][seetRef.current]
+
+            requestAnimationFrame(()=>{
+                ScrollRef.current!.style.setProperty('--drag-height', `${nextHeight}px`)
             })
-        }
-        if(moveDistance > 120) {
-
-            let result:SheetState = 'default'
-
-            //아래로 당김
-            //hidden
-            if(sheet === 'hidden') result = 'hidden'
-            //default
-            if(sheet === 'default') result = 'hidden'
-            //expand
-            if(sheet === 'expanded') result = 'default'
-
-            setSheet(result)
-            sheetRef.current!.style.transform = `translateY(0)`
-            requestAnimationFrame(() => {
-                ScrollRef.current!.classList.add('slidedown')
-            })
-        }
-        if(moveDistance >= -120 && moveDistance <= 120) {
-            setSheet(prev=>prev)
-            sheetRef.current!.style.transform = `translateY(0)`
-        }
     }
 
     return {
+        seetRef,
         sheetRef,
         ScrollRef,
         handleRef,

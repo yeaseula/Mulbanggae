@@ -13,7 +13,6 @@ import { RiListCheck } from "@remixicon/react"
 export function Location () {
 
     const { searchState, searchResult } = useLocationStore()
-
     const [open, setOpen] = useState(false)
 
     //map 관련 코드
@@ -70,7 +69,6 @@ export function Location () {
             }}
         ><RiListCheck size={14} className="relative bottom-0.5"/>다시보기
         </ReListButton>
-
         {mapReady &&
             <LocationButton map={locationRef.current} />
         }
@@ -103,5 +101,5 @@ const ReListButton = styled.button<{$open:boolean}>`
     padding: 1px 3px 0;
     cursor: pointer;
     opacity: ${(p)=>p.$open ? 1 : 0};
-    transition: opacity 0.35s ease-in-out;
+    transition: opacity 0.25s ease-in-out;
 `

@@ -46,3 +46,13 @@ export const useLocationStore = create<LocationState>((set)=>({
         return { locationMarkers: null }
     })
 }))
+
+interface TransformeState {
+    transformState: number,
+    setTransform : (val:number) => void
+}
+
+export const useTransformStore = create<TransformeState>((set)=>({
+    transformState: 0,
+    setTransform: (val) => set(()=>({ transformState : val }))
+}))
