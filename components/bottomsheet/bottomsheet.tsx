@@ -12,15 +12,19 @@ type BottomSheetProps = {
 type SheetState = 'hidden' | 'default' | 'expanded'
 
 export function BottomSheet({open,onClose,children}:BottomSheetProps){
-
     const {
         sheetRef,
-        contentRef,
+        ScrollRef,
         handleRef,
         sheet,
+        sheetLength,
+        MAXHEIGHT,
         isDrag,
+        ContentRef,
         pointerDown, pointerMove, pointerUp, initialize
-    } = useBottomSheetDrag({onClose, open})
+    } = useBottomSheetDrag()
+
+    const targetLength = MAXHEIGHT[sheetLength.current][sheet]
 
     useEffect(()=>{
         if(!open) return
@@ -56,17 +60,11 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         <Handle
             ref={handleRef}
         />
-        <InnerContainer ref={contentRef} $state={sheet}>
-            <Content >{children}</Content>
+        <InnerContainer ref={ScrollRef} $state={sheet} $height={targetLength}>
+            <Content ref={ContentRef}>{children}</Content>
         </InnerContainer>
         </Wrapper>
     )
-}
-
-const H = {
-    hidden: '1px',
-    default: '30vh',
-    expanded: '80vh'
 }
 
 const Wrapper = styled.div<{$open:boolean, $state:SheetState, $isdrag: boolean}>`
@@ -85,40 +83,29 @@ const Wrapper = styled.div<{$open:boolean, $state:SheetState, $isdrag: boolean}>
     opacity: ${(p)=>p.$open ? 1 : 0};
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 `
-const slideUpSoft = keyframes`
+const slideSoft = keyframes`
     0% {
         height: var(--target-height);
     }
     80% {
-        height: calc(var(--target-height) - 8px);
-    }
-    100% {
-        height: var(--target-height);
-    }
-`
-const slideDownSoft = keyframes`
-    0% {
-        height: var(--target-height);
-    }
-    55% {
-        height: calc(var(--target-height) + 8px);
+        height: calc(var(--target-height) - 6px);
     }
     100% {
         height: var(--target-height);
     }
 `
 
-const InnerContainer = styled.div<{$state:SheetState}>`
+const InnerContainer = styled.div<{$state:SheetState, $height: string}>`
     overflow-y: auto;
-    max-height: calc(${(p)=>H[p.$state]} + 8px);
+    max-height: ${(p)=>p.$height};
     background: white;
     &.slideup {
-        --target-height : ${(p)=>H[p.$state]};
-        animation: ${slideUpSoft} 0.3s ease-in-out;
+        --target-height : ${(p)=>p.$height};
+        animation: ${slideSoft} 0.35s ease-in-out;
     }
     &.slidedown {
-        --target-height : ${(p)=>H[p.$state]};
-        animation: ${slideDownSoft} 0.3s ease-in-out;
+        --target-height : ${(p)=>p.$height};
+        animation: ${slideSoft} 0.35s ease-out;
     }
     &::-webkit-scrollbar {
         width: 2px;

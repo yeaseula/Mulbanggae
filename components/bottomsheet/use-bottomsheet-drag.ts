@@ -1,37 +1,57 @@
+import { useLocationStore } from '@/store/locationstore'
 import { countReset } from 'console'
 import React, { useRef, useState, useEffect } from 'react'
 
-interface Props {
-    onClose: () => void
-    open: boolean
-    threshold?: number
-}
 
 type SheetState = 'hidden' | 'default' | 'expanded'
 type DragState = 'sheet' | 'content' | null
 type DragSource = 'handle' | 'content' | null
+type SheetLength = 'short' | 'long'
 
-export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
+export function useBottomSheetDrag() {
 
     const sheetRef = useRef<HTMLDivElement>(null)
-    const contentRef = useRef<HTMLDivElement>(null)
+    const ScrollRef = useRef<HTMLDivElement>(null)
     const handleRef = useRef<HTMLDivElement>(null)
+    const ContentRef = useRef<HTMLDivElement>(null)
+
     // === 초기화 값이 존재 ===
     const [sheet,setSheet] = useState<SheetState>('default')
     const startRef = useRef(0)
     const isClickRef = useRef(false)
     const dragModeRef = useRef<DragState>(null)
     const dragsourceRef = useRef<DragSource>(null)
+    const sheetLength = useRef<SheetLength>('long') // sheet 내용물의 길이에 따라
     const [isDrag,setIsDrag] = useState(false)
+    const ContentLengthRef = useRef<number>(0)
 
-    // useEffect(()=>{
-    //     setSheet('default')
-    //     startRef.current = 0
-    //     isClickRef.current = false
-    //     dragModeRef.current = null
-    //     dragsourceRef.current = null
-    //     setIsDrag(false)
-    // },[open])
+    const MAXHEIGHT = {
+        short: {
+            hidden: '1px',
+            default: `${ContentLengthRef.current}px`,
+            expanded: ''
+        },
+        long: {
+            hidden: '1px',
+            default: '30vh',
+            expanded: 'calc(100vh - 40px)'
+        }
+    }
+    //sheet 내용물에 따라 달라짐
+    //초기 마운트 이후 고정
+    //데이터값 변경 시 재판별
+    const searchResult = useLocationStore(state=>state.searchResult)
+
+    useEffect(()=>{
+        ContentLengthRef.current = ContentRef.current!.offsetHeight
+
+        if(ScrollRef.current!.offsetHeight >= ContentRef.current!.offsetHeight) {
+            sheetLength.current = 'short'
+        } else {
+            sheetLength.current = 'long'
+        }
+
+    },[searchResult])
 
     const initialize = () => {
         setSheet('default')
@@ -39,6 +59,7 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         isClickRef.current = false
         dragModeRef.current = null
         dragsourceRef.current = null
+        sheetLength.current = null
         setIsDrag(false)
         sheetRef.current!.style.transform = ``
     }
@@ -49,8 +70,8 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         isClickRef.current = true
         dragModeRef.current = null
 
-        contentRef.current!.classList.remove('slideup')
-        contentRef.current!.classList.remove('slidedown')
+        ScrollRef.current!.classList.remove('slideup')
+        ScrollRef.current!.classList.remove('slidedown')
 
         setIsDrag(false)
 
@@ -58,12 +79,13 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
         if(handleRef.current?.contains(clickTarget)) { //click 시작점 판별
             dragsourceRef.current = 'handle'
-        } else if (contentRef.current?.contains(clickTarget)) {
+        } else if (ScrollRef.current?.contains(clickTarget)) {
             dragsourceRef.current = 'content'
         } else {
             dragsourceRef.current = null
         }
-
+        //location에서 사용되는지, 일반모드로 사용되는지
+        //location에서 contents 내용이 스크롤되지않을때
     }
 
     const pointerMove = (e:React.PointerEvent) => {
@@ -72,7 +94,11 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         e.currentTarget.setPointerCapture(e.pointerId)
         const moveDistance = e.clientY - startRef.current;
         //moveDistance > 0 아래로 내림
-        const DragSheet = contentRef.current!.scrollTop === 0 //스크롤이 맨 위?
+
+        //sheet location ? default 조건분기
+        // default 단순 close open기능만 가능
+
+        //location 시트 길이에 따라 dragup 가능,불가능
 
         //dragmod ? 시작점이 handle인가? -> sheet
         //시작점이 content인가? -> 다른 조건 분기
@@ -93,6 +119,9 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         //scroll 상관없이
         //위로 올리면 default
         //아래로 내리면 변화없음
+
+        const DragSheet = ScrollRef.current!.scrollTop === 0 //스크롤이 맨 위?
+
         if(Math.abs(moveDistance) <= 15) return // 드래그 중인가?
 
         //console.log('----드래그중 통과')
@@ -100,10 +129,10 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
         if(!dragModeRef.current) {
             if(dragsourceRef.current === 'handle') {
-                dragModeRef.current = 'sheet'
+                dragModeRef.current = 'sheet' //handle을 잡으면 무조건 움직이도록
 
             } else if(dragsourceRef.current === 'content'){
-
+                //content를 잡으면 scrolltop 위치에 따라 움직이도록
                 if(DragSheet && moveDistance > 0) {
                     dragModeRef.current = 'sheet'
                 } else {
@@ -113,12 +142,18 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
         }
 
         if(dragModeRef.current === 'sheet') {
-            if(sheet === 'expanded' && moveDistance < -95 ) return
-
+            if(sheet === 'expanded' && moveDistance < -15 ) return
+            if(sheetLength.current === 'short'
+                && sheet === 'default'
+                && moveDistance < -15) return
+            if(sheetLength.current === 'short'
+                && sheet === 'hidden'
+                && moveDistance < -180
+            ) return
             sheetRef.current!.style.transform = `translateY(${moveDistance}px)`
-            contentRef.current!.style.overflowY = 'initial'
-
+            ScrollRef.current!.style.overflowY = 'initial'
         }
+
     }
 
     const pointerUp = (e:React.PointerEvent) => {
@@ -128,7 +163,7 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
         if(dragModeRef.current !== 'sheet') return
 
-        contentRef.current!.style.overflowY = 'auto'
+        ScrollRef.current!.style.overflowY = 'auto'
 
         const moveDistance = e.clientY - startRef.current;
 
@@ -138,20 +173,25 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
     const handleTranslate = (moveDistance:number) => {
 
         if(moveDistance < -120) {
+
             let result:SheetState = 'default'
 
-            //위로 당김
-            //hidden
-            if(sheet === 'hidden') result = 'default'
-            //default
-            if(sheet === 'default') result = 'expanded'
-            //expand
-            if(sheet === 'expanded') result = 'expanded'
+            if(sheetLength.current === 'long') {
+                //위로 당김
+                //hidden
+                if(sheet === 'hidden') result = 'default'
+                //default
+                if(sheet === 'default') result = 'expanded'
+                //expand
+                if(sheet === 'expanded') result = 'expanded'
+            } else {
+                if(sheet === 'hidden') result = 'default'
+            }
 
             setSheet(result)
             sheetRef.current!.style.transform = `translateY(0)`
             requestAnimationFrame(() => {
-                contentRef.current!.classList.add('slideup')
+                ScrollRef.current!.classList.add('slideup')
             })
         }
         if(moveDistance > 120) {
@@ -169,7 +209,7 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
             setSheet(result)
             sheetRef.current!.style.transform = `translateY(0)`
             requestAnimationFrame(() => {
-                contentRef.current!.classList.add('slidedown')
+                ScrollRef.current!.classList.add('slidedown')
             })
         }
         if(moveDistance >= -120 && moveDistance <= 120) {
@@ -180,8 +220,11 @@ export function useBottomSheetDrag({ onClose, open, threshold = 150 }: Props) {
 
     return {
         sheetRef,
-        contentRef,
+        ScrollRef,
         handleRef,
+        ContentRef,
+        sheetLength,
+        MAXHEIGHT,
         sheet,
         isDrag,
         pointerDown, pointerMove, pointerUp, initialize

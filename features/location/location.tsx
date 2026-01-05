@@ -21,7 +21,11 @@ export function Location () {
     const locationRef = useRef<kakao.maps.Map | null>(null)
     const [mapReady,setMapReady] = useState<boolean>(false)
 
-    const ReListButtonState = !!searchResult && !searchState
+    const ReListButtonState =
+    !!searchResult &&
+    searchResult.length > 0 &&
+    searchState === false
+
 
     useEffect(()=>{
         if (!mapRef.current) return
@@ -57,7 +61,6 @@ export function Location () {
         <>
         <MapArea ref={mapRef} />
         <LocationSearch map={locationRef.current}/>
-        {(searchResult && !searchState) &&
 
         <ReListButton
             $open={ReListButtonState}
@@ -67,7 +70,7 @@ export function Location () {
             }}
         ><RiListCheck size={14} className="relative bottom-0.5"/>다시보기
         </ReListButton>
-        }
+
         {mapReady &&
             <LocationButton map={locationRef.current} />
         }
