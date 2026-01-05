@@ -21,7 +21,7 @@ export function useBottomSheetDrag() {
     const isClickRef = useRef(false)
     const dragModeRef = useRef<DragState>(null)
     const dragsourceRef = useRef<DragSource>(null)
-    const sheetLength = useRef<SheetLength>('long') // sheet 내용물의 길이에 따라
+    const sheetLength = useRef<SheetLength>('short') // sheet 내용물의 길이에 따라
     const [isDrag,setIsDrag] = useState(false)
     const ContentLengthRef = useRef<number>(0)
 
@@ -43,6 +43,7 @@ export function useBottomSheetDrag() {
     const searchResult = useLocationStore(state=>state.searchResult)
 
     useEffect(()=>{
+
         ContentLengthRef.current = ContentRef.current!.offsetHeight
 
         if(ScrollRef.current!.offsetHeight >= ContentRef.current!.offsetHeight) {
@@ -50,6 +51,9 @@ export function useBottomSheetDrag() {
         } else {
             sheetLength.current = 'long'
         }
+        // console.log(ScrollRef.current!.offsetHeight + ' : 래퍼 길이')
+        // console.log(ContentLengthRef.current + ': 콘텐츠 길이')
+        // console.log('----🚀🚀🚀🚀🚀')
 
     },[searchResult])
 
@@ -59,7 +63,7 @@ export function useBottomSheetDrag() {
         isClickRef.current = false
         dragModeRef.current = null
         dragsourceRef.current = null
-        sheetLength.current = null
+        sheetLength.current = 'long'
         setIsDrag(false)
         sheetRef.current!.style.transform = ``
     }
@@ -119,6 +123,8 @@ export function useBottomSheetDrag() {
         //scroll 상관없이
         //위로 올리면 default
         //아래로 내리면 변화없음
+
+        console.log(sheetLength.current)
 
         const DragSheet = ScrollRef.current!.scrollTop === 0 //스크롤이 맨 위?
 
