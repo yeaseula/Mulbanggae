@@ -83,14 +83,10 @@ const InnerContainer = styled.div<{ $height: number, $isdrag: boolean}>`
     box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     border-radius: 16px 16px 0 0;
     overflow-y: auto;
-    //max-height: ${(p)=>p.$height};
     max-height: var(--drag-height, ${(p)=>p.$height}px);
     background: white;
     transform: translateY(var(--drag-y, 0px));
     transition: ${(p)=>p.$isdrag ? 'none' : 'max-height 0.35s '};
-    //transition: all 0.6s;
-    //transition :   transform 0.25s cubic-bezier(.2,.8,.2,1),
-  max-height 0.25s cubic-bezier(.2,.8,.2,1);
     will-change: transform,max-height;
     &::-webkit-scrollbar {
         width: 2px;
