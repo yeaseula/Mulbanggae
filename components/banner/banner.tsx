@@ -31,16 +31,17 @@ const banners: Banner[] = [
   },
   {
     id: 2,
-    imageUrl: "/images/banner1.png",
-    subtitle: "물생활을 위한 연초 이벤트!",
-    mainTitle: "어항 용품 최대 80%까지 할인",
-    ariaLabel: "연초 이벤트: 물생활을 위한 어항 용품 최대 80% 할인",
+    imageUrl: "/images/banner2.png",
+    subtitle: "물생활을 위한 연초 세일",
+    mainTitle: "꽃게상민 수족관\n어항 용품 최대 80% 할인!",
+    ariaLabel:
+      "꽃게상민 수족관 연초 이벤트: 물생활을 위한 어항 용품 최대 80% 할인",
   },
   {
     id: 3,
     imageUrl: "/images/banner3.png",
     subtitle: "맹슬 동물병원 개업 이벤트",
-    mainTitle: "첫 진료시 50% 할인,\n사은품 증정 이벤트",
+    mainTitle: "첫 진료시 50% 할인,\n선착순 사은품 증정!",
     ariaLabel:
       "맹슬 동물 병원 개업 이벤트: 첫 진료시 50% 할인과 사은품 증정 이벤트",
   },
