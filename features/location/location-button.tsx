@@ -50,7 +50,7 @@ const FloatingButton = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
-    // right: 16px;
+    right: calc((100vw - 390px) / 2 + 16px);
     bottom: 45px;
     z-index: 25;
     transition: transform 0.15s;
