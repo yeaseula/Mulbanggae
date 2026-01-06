@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useRef, useState } from "react"
-import { useLocationStore } from "@/store/locationstore"
+import { useLocationStore, useTransformStore } from "@/store/locationstore"
 import { BottomSheet } from "@/components/bottomsheet/bottomsheet"
 import { LocationSearch } from "@/features/location/location-search"
 import { InitMap } from "./initmap"
@@ -25,7 +25,6 @@ export function Location () {
     searchResult.length > 0 &&
     searchState === false
 
-
     useEffect(()=>{
         if (!mapRef.current) return
 
@@ -47,6 +46,9 @@ export function Location () {
 
             //전역 marker 비우기
             useLocationStore.getState().clearMarkers()
+
+            //내 위치 버튼 위치값 초기화
+            useTransformStore.getState().setTransform(53)
         }
 
     },[])
@@ -75,7 +77,7 @@ export function Location () {
         <BottomSheet open={open} onClose={()=>{
             useLocationStore.getState().setSearchState(false)
         }}>
-            <LocationBottomSheet map={locationRef.current}/>
+            <LocationBottomSheet map={locationRef.current} open={open}/>
         </BottomSheet>
         </>
     )

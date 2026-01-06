@@ -1,9 +1,9 @@
 "use client"
 import { useEffect } from "react"
 import { useTransformStore, useLocationStore } from "@/store/locationstore"
+import { moveToCurrentLocation } from "./move-current-location"
 import styled from "styled-components"
 import { RiCrosshairLine } from "@remixicon/react"
-import { moveToCurrentLocation } from "./move-current-location"
 
 export function LocationButton({map}:{map : kakao.maps.Map | null}) {
 
@@ -11,7 +11,7 @@ export function LocationButton({map}:{map : kakao.maps.Map | null}) {
 
     useEffect(()=>{
         const height = !!searchResult ? -195 : 0
-        useTransformStore.getState().setTransform(height)
+        //useTransformStore.getState().setTransform(height)
     },[searchResult])
 
     if(!map) return null
@@ -35,11 +35,13 @@ export function LocationButton({map}:{map : kakao.maps.Map | null}) {
             alert('위치정보를 가져올 수 없습니다.')
         }
     }
-    return <FloatingButton onClick={handleClick} $position={transformState}>
+    return <FloatingButton onClick={handleClick}
+    style={{ transform : `translateY(calc(-${transformState}px))`}}
+    >
         <RiCrosshairLine size={24} /></FloatingButton>
 }
 
-const FloatingButton = styled.button<{$position:number}>`
+const FloatingButton = styled.button`
     position: fixed;
     width: 42px;
     height: 42px;
@@ -49,8 +51,10 @@ const FloatingButton = styled.button<{$position:number}>`
     justify-content: center;
     align-items: center;
     // right: 16px;
-    bottom: 100px;
-    transform: ${(p)=> `translateY(calc(${p.$position}px))`};
+    bottom: 45px;
+    z-index: 25;
+    transition: transform 0.15s;
+    will-change: transform;
     z-index: 21;
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     cursor: pointer;

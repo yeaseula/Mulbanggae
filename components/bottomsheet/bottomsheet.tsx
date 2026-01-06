@@ -1,5 +1,6 @@
 "use client"
 import { ReactNode, useEffect } from "react"
+import { useTransformStore } from "@/store/locationstore"
 import { useBottomSheetDrag } from "./use-bottomsheet-drag"
 import styled, {keyframes} from "styled-components"
 
@@ -22,7 +23,7 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         isDrag,
         ContentRef,
         pointerDown, pointerMove, pointerUp, initialize
-    } = useBottomSheetDrag()
+    } = useBottomSheetDrag({open})
 
     const targetLength = MAXHEIGHTRef.current[sheetLength.current][sheetStateRef.current]
 
@@ -36,9 +37,7 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
                 initialize()
             }
         }
-
         document.addEventListener('keydown', onKeyDown);
-
         return () => {
             document.removeEventListener('keydown',onKeyDown)
         }

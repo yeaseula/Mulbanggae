@@ -1,6 +1,6 @@
 'use client'
 
-import { useLocationStore } from '@/store/locationstore'
+import { useLocationStore, useTransformStore } from '@/store/locationstore'
 import React, { useRef, useState, useEffect } from 'react'
 
 
@@ -9,12 +9,15 @@ type DragState = 'sheet' | 'content' | null
 type DragSource = 'handle' | 'content' | null
 type SheetLength = 'short' | 'long'
 
-export function useBottomSheetDrag() {
+export function useBottomSheetDrag({open}:{open:boolean}) {
 
     const sheetRef = useRef<HTMLDivElement>(null)
     const ScrollRef = useRef<HTMLDivElement>(null)
     const handleRef = useRef<HTMLDivElement>(null)
     const ContentRef = useRef<HTMLDivElement>(null)
+
+    // === 현재위치 버튼을 위한 저장소
+    const transRef = useRef<number | null>(null)
 
     // === 초기화 값이 존재 ===
     const sheetStateRef = useRef<SheetState>('default')
@@ -39,38 +42,51 @@ export function useBottomSheetDrag() {
         }
     })
 
+    const searchState = useLocationStore(state=>state.searchState)
     const searchResult = useLocationStore(state=>state.searchResult)
 
     useEffect(()=>{
         if(!ContentRef.current || !ScrollRef.current) return
-            ScrollRef.current!.style.setProperty('--drag-height', `${window.innerHeight * 0.5 + 90}px`)
-            ContentLengthRef.current = ContentRef.current!.offsetHeight
 
-            if(ScrollRef.current!.offsetHeight - 33 >= ContentRef.current!.offsetHeight) {
-                sheetLength.current = 'short'
-            } else {
-                sheetLength.current = 'long'
-            }
+        ScrollRef.current!.style.setProperty('--drag-height', `${window.innerHeight * 0.5 + 90}px`)
+        useTransformStore.getState().setTransform(53)
 
-            MAXHEIGHTRef.current = {
-                short: {
-                    hidden: 31,
-                    default: ContentLengthRef.current + 33,
-                    expanded: ContentLengthRef.current + 33
-                },
-                long: {
-                    hidden: 31,
-                    default: window.innerHeight * 0.4 + 33,
-                    expanded: window.innerHeight - 44
-                }
+        ContentLengthRef.current = ContentRef.current!.offsetHeight
+
+        if(ScrollRef.current!.offsetHeight - 33 >= ContentRef.current!.offsetHeight) {
+            sheetLength.current = 'short'
+        } else {
+            sheetLength.current = 'long'
+        }
+
+        MAXHEIGHTRef.current = {
+            short: {
+                hidden: 31,
+                default: ContentLengthRef.current + 33,
+                expanded: ContentLengthRef.current + 33
+            },
+            long: {
+                hidden: 31,
+                default: window.innerHeight * 0.4 + 33,
+                expanded: window.innerHeight - 44
             }
-            //검색값이 바뀌면 무조건 default 높이로
-            ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHTRef.current[sheetLength.current].default}px`)
+        }
+        //검색값이 바뀌면 무조건 default 높이로
+        ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHTRef.current[sheetLength.current].default}px`)
+        //시작 시 높이 저장
+        transRef.current = MAXHEIGHTRef.current[sheetLength.current].default
+        useTransformStore.getState().setTransform(transRef.current)
 
     },[searchResult])
 
-
-    const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+    useEffect(()=>{
+        if(searchState) {
+            //searchState에 따라 open/close나뉨
+            useTransformStore.getState().setTransform(MAXHEIGHTRef.current[sheetLength.current].default)
+        } else {
+            useTransformStore.getState().setTransform(53)
+        }
+    },[searchState])
 
     const initialize = () => {
         sheetStateRef.current = 'default'
@@ -79,16 +95,16 @@ export function useBottomSheetDrag() {
         isClickRef.current = false
         dragModeRef.current = null
         dragsourceRef.current = null
+        useTransformStore.getState().setTransform(53)
     }
 
     const pointerDown = (e:React.PointerEvent) => {
 
         ScrollRef.current?.classList?.remove('mouseup')
         startRef.current = e.clientY
-        //
+        //시작 시 높이 저장
         const ScrollRefHeight = ScrollRef.current!.getBoundingClientRect().y
         startHeightRef.current = window.innerHeight - ScrollRefHeight
-        //시작 시 높이 저장
 
         isClickRef.current = true
         dragModeRef.current = null
@@ -145,8 +161,14 @@ export function useBottomSheetDrag() {
             ScrollRef.current!.style.overflowY = 'initial'
 
             ScrollRef.current!.style.setProperty('--drag-y', `${moveDistance}px`)
+
+            //현재 위치 버튼 추적
+            transRef.current = requestAnimationFrame(() => {
+                useTransformStore.getState().setTransform(currentHeight)
+            })
         }
     }
+
 
     const pointerUp = (e:React.PointerEvent) => {
 
@@ -185,8 +207,10 @@ export function useBottomSheetDrag() {
 
         const nextHeight = MAXHEIGHTRef.current[sheetLength.current][sheetStateRef.current]
         ScrollRef.current!.style.setProperty('--endH', `${nextHeight}px`)
+        //현재 위치 버튼 추적
         requestAnimationFrame(()=>{
             ScrollRef.current?.classList.add('mouseup')
+            useTransformStore.getState().setTransform(nextHeight)
             ScrollRef.current!.style.setProperty('--drag-height', `${nextHeight}px`)
         })
     }
