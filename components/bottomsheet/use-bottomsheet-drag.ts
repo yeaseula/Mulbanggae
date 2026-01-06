@@ -27,8 +27,7 @@ export function useBottomSheetDrag() {
     const sheetLength = useRef<SheetLength>('short') // sheet 내용물의 길이에 따라
     const [isDrag,setIsDrag] = useState(false)
     const ContentLengthRef = useRef<number>(0)
-
-    const [MAXHEIGHT, setMaxHeight] = useState({
+    const MAXHEIGHTRef = useRef({
         short: {
             hidden: 33,
             default: ContentLengthRef.current + 33,
@@ -44,37 +43,39 @@ export function useBottomSheetDrag() {
     const searchResult = useLocationStore(state=>state.searchResult)
 
     useEffect(()=>{
+        if(!ContentRef.current || !ScrollRef.current) return
+            ScrollRef.current!.style.setProperty('--drag-height', `${window.innerHeight * 0.5 + 90}px`)
+            ContentLengthRef.current = ContentRef.current!.offsetHeight
 
-        ContentLengthRef.current = ContentRef.current!.offsetHeight
-
-        if(ScrollRef.current!.offsetHeight >= ContentRef.current!.offsetHeight) {
-            sheetLength.current = 'short'
-        } else {
-            sheetLength.current = 'long'
-        }
-
-        setMaxHeight({
-            short: {
-                hidden: 33,
-                default: ContentLengthRef.current + 33,
-                expanded: ContentLengthRef.current + 33
-            },
-            long: {
-                hidden: 33,
-                default: window.innerHeight * 0.3 + 33,
-                expanded: window.innerHeight * 0.8 - 44
+            if(ScrollRef.current!.offsetHeight - 33 >= ContentRef.current!.offsetHeight) {
+                sheetLength.current = 'short'
+            } else {
+                sheetLength.current = 'long'
             }
-        })
-        //검색값이 바뀌면 무조건 default 높이로
-        ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHT[sheetLength.current].default}px`)
+
+            MAXHEIGHTRef.current = {
+                short: {
+                    hidden: 31,
+                    default: ContentLengthRef.current + 33,
+                    expanded: ContentLengthRef.current + 33
+                },
+                long: {
+                    hidden: 31,
+                    default: window.innerHeight * 0.4 + 33,
+                    expanded: window.innerHeight - 44
+                }
+            }
+            //검색값이 바뀌면 무조건 default 높이로
+            ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHTRef.current[sheetLength.current].default}px`)
 
     },[searchResult])
+
 
     const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
     const initialize = () => {
         seetRef.current = 'default'
-        ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHT[sheetLength.current].default}px`)
+        ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHTRef.current[sheetLength.current].default}px`)
         startRef.current = 0
         isClickRef.current = false
         dragModeRef.current = null
@@ -82,8 +83,14 @@ export function useBottomSheetDrag() {
     }
 
     const pointerDown = (e:React.PointerEvent) => {
+
+        ScrollRef.current?.classList?.remove('mouseup')
         startRef.current = e.clientY
-        startHeightRef.current = ScrollRef.current!.getBoundingClientRect().height
+        //
+        const ScrollRefHeight = ScrollRef.current!.getBoundingClientRect().y
+        startHeightRef.current = window.innerHeight - ScrollRefHeight
+        //시작 시 높이 저장
+
         isClickRef.current = true
         dragModeRef.current = null
         setIsDrag(true)
@@ -105,7 +112,6 @@ export function useBottomSheetDrag() {
         e.currentTarget.setPointerCapture(e.pointerId)
         const moveDistance = e.clientY - startRef.current;
         const DragSheet = ScrollRef.current!.scrollTop === 0 //스크롤이 맨 위?
-        const startHeight = startHeightRef.current
 
         if(Math.abs(moveDistance) <= 10) return // 드래그 중인가?
         setIsDrag(true)
@@ -124,14 +130,22 @@ export function useBottomSheetDrag() {
             }
         }
 
+        //현재높이 = 시작높이 - 이동거리만큼
+        const currentHeight = startHeightRef.current - moveDistance
+        const maxheight = MAXHEIGHTRef.current[sheetLength.current].expanded
+        const minheight = MAXHEIGHTRef.current[sheetLength.current].hidden
+
+        //const viewHeight = window.innerHeight - ScrollRef.current!.getBoundingClientRect().y //눈에 보여지는 높이
+
         if(dragModeRef.current === 'sheet') {
-            if(startHeight - moveDistance > MAXHEIGHT[sheetLength.current].expanded) return
+            if(Math.round(currentHeight) > maxheight) return
             //지금 높이가 현재 상황의 최대값보다 크면 리턴
-            if(startHeight - moveDistance < MAXHEIGHT[sheetLength.current].hidden) return
+            if(Math.round(currentHeight) < minheight) return
             //지금 높이가 현재 상황의 최소값보다 작으면 리턴
 
-            ScrollRef.current!.style.setProperty('--drag-height', `${startHeight - moveDistance}px`)
             ScrollRef.current!.style.overflowY = 'initial'
+
+            ScrollRef.current!.style.setProperty('--drag-y', `${moveDistance}px`)
         }
     }
 
@@ -145,40 +159,36 @@ export function useBottomSheetDrag() {
 
         if(dragModeRef.current !== 'sheet') return //시트모드가 아니라면 움직이지않음
 
-        const currentHeight =  ScrollRef.current!.getBoundingClientRect().height
+        const ScrollRefHeight =  ScrollRef.current!.getBoundingClientRect().y
+        const viewHeight = window.innerHeight - ScrollRefHeight
 
-        ScrollRef.current!.style.setProperty('--drag-height',`${currentHeight}px`)
-        //마우스 놓은 시점의 높이에서 시작
-
+        //console.log(viewHeight + ': 현재 스크롤영역의 높이')
+        ScrollRef.current!.style.setProperty('--drag-y','0px')
         ScrollRef.current!.style.overflowY = 'auto'
-
-
-
-        handleTranslate()
+        ScrollRef.current!.style.setProperty('--drag-height',`${viewHeight}px`)
+        //마우스 놓은 시점의 높이에서 시작
+        ScrollRef.current!.style.setProperty('--startH', `${viewHeight}px`)
+        handleTranslate(viewHeight)
     }
 
-    const handleTranslate = () => {
+    const handleTranslate = (height:number) => {
+        const hiddenH = MAXHEIGHTRef.current[sheetLength.current].hidden
+        const defaultH = MAXHEIGHTRef.current[sheetLength.current].default
+        const expandedH = MAXHEIGHTRef.current[sheetLength.current].expanded
 
-        const currentHeight = ScrollRef.current!.getBoundingClientRect().height
-
-        const hiddenH = MAXHEIGHT[sheetLength.current].hidden
-        const defaultH = MAXHEIGHT[sheetLength.current].default
-        const expandedH = MAXHEIGHT[sheetLength.current].expanded
-
-        if(currentHeight >= (defaultH + expandedH) / 2) {
-
+        if(height >= (defaultH + expandedH) / 2) {
             seetRef.current = 'expanded'
-        } else if(currentHeight >= (defaultH + hiddenH) / 2) {
-
+        } else if(height >= (defaultH + hiddenH) / 2) {
             seetRef.current = 'default'
         } else {
-
             seetRef.current = 'hidden'
         }
 
-        const nextHeight = MAXHEIGHT[sheetLength.current][seetRef.current]
-
+        const nextHeight = MAXHEIGHTRef.current[sheetLength.current][seetRef.current]
+        ScrollRef.current!.style.setProperty('--endH', `${nextHeight}px`)
         requestAnimationFrame(()=>{
+
+            ScrollRef.current?.classList.add('mouseup')
             ScrollRef.current!.style.setProperty('--drag-height', `${nextHeight}px`)
         })
     }
@@ -190,7 +200,7 @@ export function useBottomSheetDrag() {
         handleRef,
         ContentRef,
         sheetLength,
-        MAXHEIGHT,
+        MAXHEIGHTRef,
         sheet,
         isDrag,
         pointerDown, pointerMove, pointerUp, initialize

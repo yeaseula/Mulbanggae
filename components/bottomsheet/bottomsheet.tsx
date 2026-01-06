@@ -17,15 +17,15 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         sheetRef,
         ScrollRef,
         handleRef,
-        sheet,
         sheetLength,
-        MAXHEIGHT,
+        MAXHEIGHTRef,
         isDrag,
         ContentRef,
         pointerDown, pointerMove, pointerUp, initialize
     } = useBottomSheetDrag()
 
-    const targetLength = MAXHEIGHT[sheetLength.current][seetRef.current]
+    const targetLength = MAXHEIGHTRef.current[sheetLength.current][seetRef.current]
+
 
     useEffect(()=>{
         if(!open) return
@@ -58,7 +58,9 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
             <Handle
                 ref={handleRef}
             />
-            <Content ref={ContentRef}>{children}</Content>
+            <Content ref={ContentRef}>
+                {children}
+            </Content>
         </InnerContainer>
         </Wrapper>
     )
@@ -78,16 +80,33 @@ const Wrapper = styled.div<{$open:boolean}>`
     opacity: ${(p)=>p.$open ? 1 : 0};
 `
 
+const testFrame = keyframes`
+    0% {
+        max-height: var(--startH);
+    }
+    100% {
+        max-height: var(--endH);
+    }
+`
+
 const InnerContainer = styled.div<{ $height: number, $isdrag: boolean}>`
     background-color: #fff;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
     border-radius: 16px 16px 0 0;
     overflow-y: auto;
-    max-height: var(--drag-height, ${(p)=>p.$height}px);
+    max-height: var(--drag-height, 0px);
+    height: auto;
     background: white;
     transform: translateY(var(--drag-y, 0px));
-    transition: ${(p)=>p.$isdrag ? 'none' : 'max-height 0.35s '};
+    //transition: ${(p)=>p.$isdrag ? 'none' : 'max-height 0.5s '};
+    //transition-delay: 400ms;
+    //transition: all 2s;
     will-change: transform,max-height;
+    touch-action: pan-y; /* 가로 스크롤 방지 */
+    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+
+    &.mouseup {
+        animation: ${testFrame} 180ms linear;
+    }
     &::-webkit-scrollbar {
         width: 2px;
     }
@@ -107,6 +126,8 @@ const Handle = styled.div`
     cursor: pointer;
     touch-action: none;
     background: #fff;
+    border-radius: 16px 16px 0 0;
+    border-top: 1px solid var(--gray_semidark_color);
     &::before {
         content: '';
         display: block;
@@ -122,6 +143,6 @@ const Handle = styled.div`
 `
 
 const Content = styled.div`
-    padding-bottom: 50px;
+    padding-bottom: 20px;
     background: white;
 `
