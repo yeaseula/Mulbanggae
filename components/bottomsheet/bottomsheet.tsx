@@ -77,7 +77,7 @@ const Wrapper = styled.div<{$open:boolean}>`
     transform: ${(p)=>p.$open ? 'translateY(0)' : 'translateY(100%)'};
     transition: transform 0.25s ease-in-out;
     will-change: transform;
-    opacity: ${(p)=>p.$open ? 1 : 0};
+    visibility: ${(p)=>p.$open ? 'visible' : 'hidden'};
 `
 
 const testFrame = keyframes`

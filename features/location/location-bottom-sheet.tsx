@@ -5,7 +5,9 @@ import { MoveLocation } from "./move-location"
 import { RiHeartLine, RiPhoneLine, RiLinksLine } from "@remixicon/react"
 import styled from "styled-components"
 
-export function LocationBottomSheet ({map}:{map : kakao.maps.Map | null}) {
+export function LocationBottomSheet ({map, open} :
+    {map : kakao.maps.Map | null, open: boolean}
+) {
 
     const { searchResult, searchStatus } = useLocationStore()
 
@@ -25,14 +27,18 @@ export function LocationBottomSheet ({map}:{map : kakao.maps.Map | null}) {
         return (
             <>
             {searchResult?.map((ele)=>(
-                <div key={ele.id} className="flex justify-between gap-3 pt-6 px-4 mb-3">
+                <div
+                key={ele.id}
+                className="flex justify-between gap-3 pt-6 px-4 mb-3">
                     <div className="relative flex flex-col justify-between">
                         <div>
                             <div className="flex items-center gap-2">
                                 <Title>
                                     {ele.place_name}
                                 </Title>
-                                <button className="cursor-pointer text-sm py-1 px-3 rounded-sm bg-(--sub_light_color)"
+                                <button
+                                tabIndex={open ? 0 : 1}
+                                className="cursor-pointer text-sm py-1 px-3 rounded-sm bg-(--sub_light_color)"
                                 onClick={()=>{MoveLocation(map,ele.x,ele.y,ele.id)}}
                                 >지도보기</button>
                             </div>
@@ -40,9 +46,15 @@ export function LocationBottomSheet ({map}:{map : kakao.maps.Map | null}) {
                         </div>
 
                         <ButtonWrap className="flex gap-2">
-                            <Link href={`tel:${ele.phone}`}><RiPhoneLine size={16} /></Link>
-                            <Link href={ele.place_url}><RiLinksLine size={16} /></Link>
-                            <button type="button"><RiHeartLine size={16} /></button>
+                            <Link
+                            tabIndex={open ? 0 : 1}
+                            href={`tel:${ele.phone}`}><RiPhoneLine size={16} /></Link>
+                            <Link
+                            tabIndex={open ? 0 : 1}
+                            href={ele.place_url}><RiLinksLine size={16} /></Link>
+                            <button
+                            tabIndex={open ? 0 : 1}
+                            type="button"><RiHeartLine size={16} /></button>
                         </ButtonWrap>
                     </div>
                     <div className="w-[100px] h-[100px] rounded-2xl bg-amber-200">
