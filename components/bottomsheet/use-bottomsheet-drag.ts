@@ -17,8 +17,7 @@ export function useBottomSheetDrag() {
     const ContentRef = useRef<HTMLDivElement>(null)
 
     // === 초기화 값이 존재 ===
-    const [sheet,setSheet] = useState<SheetState>('default')
-    const seetRef = useRef<SheetState>('default')
+    const sheetStateRef = useRef<SheetState>('default')
     const startRef = useRef(0)
     const startHeightRef = useRef(0)
     const isClickRef = useRef(false)
@@ -74,7 +73,7 @@ export function useBottomSheetDrag() {
     const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
     const initialize = () => {
-        seetRef.current = 'default'
+        sheetStateRef.current = 'default'
         ScrollRef.current!.style.setProperty('--drag-height', `${MAXHEIGHTRef.current[sheetLength.current].default}px`)
         startRef.current = 0
         isClickRef.current = false
@@ -177,31 +176,29 @@ export function useBottomSheetDrag() {
         const expandedH = MAXHEIGHTRef.current[sheetLength.current].expanded
 
         if(height >= (defaultH + expandedH) / 2) {
-            seetRef.current = 'expanded'
+            sheetStateRef.current = 'expanded'
         } else if(height >= (defaultH + hiddenH) / 2) {
-            seetRef.current = 'default'
+            sheetStateRef.current = 'default'
         } else {
-            seetRef.current = 'hidden'
+            sheetStateRef.current = 'hidden'
         }
 
-        const nextHeight = MAXHEIGHTRef.current[sheetLength.current][seetRef.current]
+        const nextHeight = MAXHEIGHTRef.current[sheetLength.current][sheetStateRef.current]
         ScrollRef.current!.style.setProperty('--endH', `${nextHeight}px`)
         requestAnimationFrame(()=>{
-
             ScrollRef.current?.classList.add('mouseup')
             ScrollRef.current!.style.setProperty('--drag-height', `${nextHeight}px`)
         })
     }
 
     return {
-        seetRef,
+        sheetStateRef,
         sheetRef,
         ScrollRef,
         handleRef,
         ContentRef,
         sheetLength,
         MAXHEIGHTRef,
-        sheet,
         isDrag,
         pointerDown, pointerMove, pointerUp, initialize
     }

@@ -13,7 +13,7 @@ type SheetState = 'hidden' | 'default' | 'expanded'
 
 export function BottomSheet({open,onClose,children}:BottomSheetProps){
     const {
-        seetRef,
+        sheetStateRef,
         sheetRef,
         ScrollRef,
         handleRef,
@@ -24,7 +24,7 @@ export function BottomSheet({open,onClose,children}:BottomSheetProps){
         pointerDown, pointerMove, pointerUp, initialize
     } = useBottomSheetDrag()
 
-    const targetLength = MAXHEIGHTRef.current[sheetLength.current][seetRef.current]
+    const targetLength = MAXHEIGHTRef.current[sheetLength.current][sheetStateRef.current]
 
 
     useEffect(()=>{
