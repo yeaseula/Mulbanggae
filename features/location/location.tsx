@@ -59,9 +59,19 @@ export function Location () {
         setOpen(searchState)
     },[searchState])
 
-
     return (
         <>
+        <Loading
+        $mapReady={mapReady}
+        className="flex justify-center items-center gap-2.5">
+        <div className="flex items-center justify-center">
+            <div className="relative h-10 w-10">
+                <div className="absolute inset-0 rounded-full bg-(--main_color) opacity-75 animate-ping" />
+                <div className="relative h-full w-full rounded-full bg-(--main_color) animate-pulse" />
+            </div>
+        </div>
+            내 위치 찾는중..
+        </Loading>
         <MapArea ref={mapRef} />
         <LocationSearch map={locationRef.current}/>
 
@@ -84,6 +94,16 @@ export function Location () {
         </>
     )
 }
+
+const Loading = styled.div<{$mapReady:boolean}>`
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: ${(p)=>p.$mapReady ? -1 : 100};
+    font-size: 1.4rem;
+    background: white;
+    visibility: ${(p)=>p.$mapReady ? 'hidden' : 'visible'};
+`
 
 const MapArea = styled.div`
     width: 100%;
