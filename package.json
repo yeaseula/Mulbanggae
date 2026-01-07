@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@remixicon/react": "^4.8.0",
+    "framer-motion": "^12.23.26",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -17,6 +18,9 @@
     "react-hook-form": "^7.69.0",
     "styled-components": "^6.1.19",
     "swiper": "^12.0.3"
+    "react-kakao-maps-sdk": "^1.2.0",
+    "styled-components": "^6.1.19",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -26,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "eslint-config-prettier": "^10.1.8",
+    "kakao.maps.d.ts": "^0.1.40",
     "prettier": "^3.7.4",
     "tailwindcss": "^4",
     "typescript": "^5"

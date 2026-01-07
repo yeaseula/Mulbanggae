@@ -16,4 +16,5 @@ const HeaderWrapper = styled.header`
     top: 0;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 10;
 `

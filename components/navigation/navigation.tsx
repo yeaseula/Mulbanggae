@@ -72,6 +72,7 @@ const NavigationWrapper = styled.div`
     display: flex;
     align-items: center;
     border-top: 1px solid var(--gray_medium_color);
+    background-color: #fff;
 `
 
 const NavigationDetail = styled(Link)`
