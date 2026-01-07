@@ -9,13 +9,18 @@ export interface LocationMarker {
 
 interface LocationState {
     searchState: boolean //값을 찾고있는지
+    setSearchState: (value:boolean) => void
+
     searchStatus: SearchStatus
+    error:  string | null
+    setSearch: ()=>void
+    setSearchSuccess: (data:kakao.maps.services.PlacesSearchResult) => void
+    setSearchError: (message: string) => void
+
     searchResult: kakao.maps.services.PlacesSearchResult | null
-    error: string | null
+
     markers: kakao.maps.Marker | null
     locationMarkers: LocationMarker[] | null
-    setSearchState: (value:boolean) => void
-    setSearchResult: (data:any) => void
     setMarkers: (value: kakao.maps.Marker) => void
     setLocationMarkers: (value: LocationMarker[]) => void
     clearMarkers: () => void
@@ -24,17 +29,25 @@ interface LocationState {
 
 export const useLocationStore = create<LocationState>((set)=>({
     searchState: false,
+    setSearchState: (value)=>set(()=>({ searchState: value })),
+
     searchStatus: 'idle',
     searchResult: null,
     error: null,
+    setSearch: ()=>set({ searchStatus: 'loading', error: null }),
+    setSearchSuccess: (data:kakao.maps.services.PlacesSearchResult) => set({
+        searchStatus: data.length === 0 ? 'empty' : 'success',
+        searchResult: data,
+        error: null,
+    }),
+    setSearchError: (message: string) => set({
+        searchStatus: 'error',
+        error: message,
+        searchResult: null
+    }),
+
     markers: null,
     locationMarkers: null,
-    setSearchResult: (data) => set({
-        searchStatus: data.length === 0 ? 'empty' : 'success',
-        searchResult: data ,
-        error: null
-    }),
-    setSearchState: (value)=>set(()=>({ searchState: value })),
     setMarkers: (value) => set(()=>({ markers: value })),
     setLocationMarkers: (value) => set(()=>({ locationMarkers: value })),
     clearMarkers: () => set((state)=>{

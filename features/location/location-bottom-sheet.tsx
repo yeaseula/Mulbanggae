@@ -12,15 +12,13 @@ export function LocationBottomSheet ({map, open} :
     const { searchResult, searchStatus } = useLocationStore()
 
     if(searchStatus === 'error') {
-        return <>에러가 발생했습니다.</>
+        console.log('에러가 발생했습니다.')
+        return
     }
 
     if(searchStatus === 'empty') {
-        return <>검색 결과가 없습니다</>
-    }
-
-    if(searchStatus === 'loading') {
-
+        console.log('검색결과가 없습니다')
+        return
     }
 
     if(searchStatus === 'success') {

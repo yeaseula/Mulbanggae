@@ -14,8 +14,6 @@ export function Location () {
 
     const searchState = useLocationStore(state=>state.searchState)
     const searchResult = useLocationStore(state=>state.searchResult)
-    const markers = useLocationStore(s=>s.markers)
-    const locationMarkers = useLocationStore(s=>s.locationMarkers)
 
     const [open, setOpen] = useState(false)
 
