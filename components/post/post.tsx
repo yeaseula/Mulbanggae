@@ -8,6 +8,7 @@ export function Post() {
         <div className="px-[15px]">
             <S.Wrapper>
                 <S.ContentsArea>
+                    <S.LinkArea href={'/'}></S.LinkArea>
                     <S.LeftSide>
                         {/* 있으면 노출, 없으면 미노출 */}
                         <div className="mb-5 flex gap-2.5 items-center">

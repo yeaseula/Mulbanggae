@@ -1,3 +1,4 @@
+import Link from "next/link"
 import styled from "styled-components"
 
 export const Wrapper = styled.div`
@@ -5,8 +6,17 @@ export const Wrapper = styled.div`
     border-bottom: 1px solid var(--gray_semidark_color);
 `
 export const ContentsArea = styled.div`
+    position: relative;
     display: flex;
     gap: 10px;
+`
+export const LinkArea = styled(Link)`
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 5;
 `
 export const Category = styled.span`
     display: inline-block;
