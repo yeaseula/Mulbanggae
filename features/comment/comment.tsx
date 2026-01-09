@@ -1,8 +1,14 @@
+"use client"
+
 import Image from "next/image"
+import { CommentWrite } from "./comment-write"
 import { CommonWrapper } from "@/styled/layout.styled"
 import { RiMore2Line, RiChat1Line } from "@remixicon/react"
+import { useState } from "react"
 
 export function Comment() {
+    const [commentOpen,setCommentOpen] = useState(false)
+
     return (
         <>
         <div className="profile-zone relative py-4">
@@ -27,7 +33,7 @@ export function Comment() {
                     <span className="text-[1.2rem]">방금 전</span>
                 </div>
             </div>
-            <button className="absolute top-2 right-4">
+            <button className="absolute top-4 right-4">
                 <RiMore2Line size={16} />
             </button>
             </CommonWrapper>
@@ -54,11 +60,13 @@ export function Comment() {
                         <span className="text-[1.2rem]">방금 전</span>
                     </div>
                 </div>
-                <button className="absolute top-2 right-4">
+                <button className="absolute top-4 right-4">
                     <RiMore2Line size={16} />
                 </button>
             </CommonWrapper>
         </div>
+        {/* 댓글쓰기 */}
+        <CommentWrite></CommentWrite>
         </>
     )
 }
