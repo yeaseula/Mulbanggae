@@ -4,12 +4,11 @@ import Image from "next/image"
 import { CommentWrite } from "./comment-write"
 import { CommonWrapper } from "@/styled/layout.styled"
 import { RiMore2Line, RiChat1Line } from "@remixicon/react"
-import { useRef, useState } from "react"
+import { useState } from "react"
 
 export function Comment() {
     const [commentOpen,setCommentOpen] = useState(false)
     const [mentionUser,setMentionUser] = useState<string | null>(null)
-    const mentionRef = useRef<string | null>(null)
 
     const handleComment = (e:React.MouseEvent<HTMLButtonElement>) => {
         const target = e.currentTarget.dataset.writer
