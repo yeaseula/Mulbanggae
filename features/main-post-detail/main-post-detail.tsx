@@ -1,21 +1,21 @@
 "use client"
 import Image from 'next/image'
-import * as S from '../../components/post/post.styled'
-import { CommonWrapper } from '@/styled/layout.styled'
 import { PostMeta } from '@/components/post/postmeta'
 import { PostEngagement } from '@/components/post/post-engagement'
+import * as S from '../../components/post/post.styled'
+import { CommonTopWrapper } from '@/styled/layout.styled'
 
 export function MainPostDetail() {
     return (
-        <CommonWrapper>
-            <div className='pt-[15px]'>
+        <CommonTopWrapper>
+            <div className='py-4'>
                 <S.Category>합사</S.Category>
                 <div className='profilezone mt-[10px]'>
                     <div className='flex gap-[10px] items-center'>
                         <Image src={'/images/empty-profile.svg'}
                         width={36}
                         height={36}
-                        alt=''
+                        alt='프로필 사진'
                         />
                         <div className='text-[1.3rem] font-bold'>닉네임</div>
                     </div>
@@ -43,8 +43,6 @@ export function MainPostDetail() {
                     </div>
                 </div>
             </div>
-        </CommonWrapper>
+        </CommonTopWrapper>
     )
 }
-
-const Nickname = {}
