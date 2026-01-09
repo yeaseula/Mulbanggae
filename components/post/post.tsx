@@ -16,7 +16,7 @@ export function Post() {
                             <S.Writer>까망베르</S.Writer>
                         </div>
                         {/* 있으면 노출, 없으면 미노출 끝*/}
-                        <div className="text-2xl">
+                        <div className="text-2xl line-clamp-3">
                             망까룽까망까룽까우리집고양이망까룽까망까룽까망까룽까망까룽까망고양이망까룽까룽까룽룽룽
                             망까룽까망까룽까
                         </div>

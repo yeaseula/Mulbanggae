@@ -49,3 +49,9 @@ export const Font2 = styled.span`
     color: var(--gray_black_color);
     font-size: 1.1rem;
 `
+export const LickButton = styled.button`
+    display: flex;
+    align-items: center;
+    color: var(--gray_black_color);
+    font-size: 1.1rem;
+`
