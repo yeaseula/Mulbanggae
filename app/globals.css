@@ -51,6 +51,7 @@ body {
 
 main {
   padding-top: 50px;
+  position: relative;
 }
 
 .swiper-pagination-bullet {
