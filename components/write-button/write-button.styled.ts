@@ -3,13 +3,13 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { motion } from "framer-motion";
 
 export const ButtonWrap = styled.div`
-  position: absolute;
+  position: fixed; //메인 크기 정해지면 absolute로 바꾸기
   right: 16px;
   bottom: 80px;
   z-index: 1000;
 `;
 
-export const FabButton = styled.button`
+export const Fab = styled.button`
   width: 45px;
   height: 45px;
   border-radius: 999px;
@@ -26,12 +26,10 @@ export const FabButton = styled.button`
     transform 120ms ease,
     background-color 160ms ease;
 
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &.open {
+  // 우선순위 높여줌
+  &&.active {
     background-color: #f3f7ff;
+    transform: scale(0.98);
   }
 `;
 
@@ -42,7 +40,7 @@ export const IconWrap = styled.div`
   color: white;
   position: relative;
 
-  ${FabButton}.open & {
+  ${Fab}.active & {
     color: black;
   }
 `;

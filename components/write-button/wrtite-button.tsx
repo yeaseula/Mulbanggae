@@ -12,7 +12,7 @@ export function WriteButton({ children }: { children: React.ReactNode }) {
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <S.ButtonWrap>
         <DropdownMenu.Trigger asChild>
-          <S.FabButton className={open ? "active" : ""} aria-label="글쓰기">
+          <S.Fab className={open ? "active" : ""} aria-label="글쓰기">
             <S.IconWrap>
               <S.Bar
                 animate={{ rotate: open ? 45 : 0 }}
@@ -23,7 +23,7 @@ export function WriteButton({ children }: { children: React.ReactNode }) {
                 transition={{ type: "spring", stiffness: 600, damping: 36 }}
               />
             </S.IconWrap>
-          </S.FabButton>
+          </S.Fab>
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Portal>
